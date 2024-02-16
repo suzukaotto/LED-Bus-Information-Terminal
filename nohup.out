@@ -1,0 +1,1159 @@
+FYI: not running as root which means we can't properly control timing unless this is a real-time kernel. Expect color degradation. Consider running as root with sudo.
+Can't set realtime thread priority=99: Operation not permitted.
+	You are probably not running as root ?
+	This will seriously mess with color stability and flicker
+	of the matrix. Please run as `root` (e.g. by invoking this
+	program with `sudo`), or setting the capability on this
+	binary by calling
+	sudo setcap 'cap_sys_nice=eip' /usr/bin/python3.11
+
+
+----- System Testing -----
+--------------------------
+----- Getting bus station list -----
+[19:46:03.009731] Bus station list API Request sent
+[19:46:03.410281] Got bus station list
+------------------------------------
+----- Getting arvl bus list -----
+[19:46:03.417820] Getting arvl bus list ... (1/4) : 서울병원(47307)
+[19:46:03.579876] station arvl bus API Request sent
+[19:46:03.659412] station arvl bus API data received .
+[19:46:03.660153] >> Get additional bus information . [241426001](1/1)
+[19:46:03.660774] route info API Request sent
+[19:46:03.794496] route info API API data received
+[19:46:03.795190] route order info API Request sent
+[19:46:03.999483] route order info API data received
+[19:46:04.000693] Got arvl bus list .       (1/4) : 서울병원(47307)
+[19:46:04.000930] Getting arvl bus list ... (2/4) : 서울병원(47574)
+[19:46:04.157302] station arvl bus API Request sent
+[19:46:04.388807] station arvl bus API data received .
+[19:46:04.389600] >> Get additional bus information . [228000409](1/5)
+[19:46:04.390241] route info API Request sent
+[19:46:04.444489] route info API API data received
+[19:46:04.445190] route order info API Request sent
+[19:46:04.593899] route order info API data received
+[19:46:04.594577] >> Get additional bus information . [228000021](2/5)
+[19:46:04.595821] route info API Request sent
+[19:46:04.662964] route info API API data received
+[19:46:04.665846] route order info API Request sent
+[19:46:04.760244] route order info API data received
+[19:46:04.760978] >> Get additional bus information . [228000029](3/5)
+[19:46:04.761573] route info API Request sent
+[19:46:04.841227] route info API API data received
+[19:46:04.841953] route order info API Request sent
+[19:46:04.923431] route order info API data received
+[19:46:04.924159] >> Get additional bus information . [228000108](4/5)
+[19:46:04.924745] route info API Request sent
+[19:46:05.008506] route info API API data received
+[19:46:05.009202] route order info API Request sent
+[19:46:05.106595] route order info API data received
+[19:46:05.107331] >> Get additional bus information . [228000136](5/5)
+[19:46:05.107916] route info API Request sent
+[19:46:05.174790] route info API API data received
+[19:46:05.175474] route order info API Request sent
+[19:46:05.295128] route order info API data received
+[19:46:05.295993] Got arvl bus list .       (2/4) : 서울병원(47574)
+[19:46:05.296636] Getting arvl bus list ... (3/4) : 덕영고등학교(56151)
+[19:46:05.458518] station arvl bus API Request sent
+[19:46:05.566253] station arvl bus API data received .
+[19:46:05.566925] >> Get additional bus information . [241426001](1/1)
+[19:46:05.567454] route info API Request sent
+[19:46:05.707189] route info API API data received
+[19:46:05.707884] route order info API Request sent
+Traceback (most recent call last):
+  File "/home/suzukaotto/BITP/python/app.py", line 392, in <module>
+    update_station_arvl_bus_list(manager)
+  File "/home/suzukaotto/BITP/python/app.py", line 328, in update_station_arvl_bus_list
+    bus_station.arvl_bus_list = API.get_arvl_bus_list(self.bus_station_list[i])
+                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/suzukaotto/BITP/python/API/app.py", line 179, in get_arvl_bus_list
+    route_order_data = get_route_order_info(serviceKey, arvl_bus.routeId)
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/suzukaotto/BITP/python/API/func.py", line 73, in get_route_order_info
+    response = requests.get(url, params=params)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3/dist-packages/requests/api.py", line 73, in get
+    return request("get", url, params=params, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3/dist-packages/requests/api.py", line 59, in request
+    return session.request(method=method, url=url, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3/dist-packages/requests/sessions.py", line 587, in request
+    resp = self.send(prep, **send_kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3/dist-packages/requests/sessions.py", line 701, in send
+    r = adapter.send(request, **kwargs)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3/dist-packages/requests/adapters.py", line 489, in send
+    resp = conn.urlopen(
+           ^^^^^^^^^^^^^
+  File "/usr/lib/python3/dist-packages/urllib3/connectionpool.py", line 704, in urlopen
+    httplib_response = self._make_request(
+                       ^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3/dist-packages/urllib3/connectionpool.py", line 399, in _make_request
+    conn.request(method, url, **httplib_request_kw)
+  File "/usr/lib/python3/dist-packages/urllib3/connection.py", line 239, in request
+    super(HTTPConnection, self).request(method, url, body=body, headers=headers)
+  File "/usr/lib/python3.11/http/client.py", line 1282, in request
+    self._send_request(method, url, body, headers, encode_chunked)
+  File "/usr/lib/python3.11/http/client.py", line 1328, in _send_request
+    self.endheaders(body, encode_chunked=encode_chunked)
+  File "/usr/lib/python3.11/http/client.py", line 1277, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+  File "/usr/lib/python3.11/http/client.py", line 1037, in _send_output
+    self.send(msg)
+  File "/usr/lib/python3.11/http/client.py", line 975, in send
+    self.connect()
+  File "/usr/lib/python3/dist-packages/urllib3/connection.py", line 205, in connect
+    conn = self._new_conn()
+           ^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3/dist-packages/urllib3/connection.py", line 174, in _new_conn
+    conn = connection.create_connection(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3/dist-packages/urllib3/util/connection.py", line 86, in create_connection
+    sock.connect(sa)
+KeyboardInterrupt
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/suzukaotto/BITP/python/app.py", line 395, in <module>
+    manager.program_kill("KeyboardInterrupt")
+  File "/home/suzukaotto/BITP/python/app.py", line 301, in program_kill
+    time.sleep(1)
+KeyboardInterrupt
+FYI: not running as root which means we can't properly control timing unless this is a real-time kernel. Expect color degradation. Consider running as root with sudo.
+Can't set realtime thread priority=99: Operation not permitted.
+	You are probably not running as root ?
+	This will seriously mess with color stability and flicker
+	of the matrix. Please run as `root` (e.g. by invoking this
+	program with `sudo`), or setting the capability on this
+	binary by calling
+	sudo setcap 'cap_sys_nice=eip' /usr/bin/python3.11
+
+
+----- System Testing -----
+--------------------------
+----- Getting bus station list -----
+[19:46:18.010018] Bus station list API Request sent
+[19:46:18.348344] Got bus station list
+------------------------------------
+----- Getting arvl bus list -----
+[19:46:18.353286] Getting arvl bus list ... (1/4) : 서울병원(47307)
+[19:46:18.557040] station arvl bus API Request sent
+[19:46:18.656320] station arvl bus API data received .
+[19:46:18.656425] >> Get additional bus information . [241426001](1/1)
+[19:46:18.656457] route info API Request sent
+[19:46:18.937861] route info API API data received
+[19:46:18.937944] route order info API Request sent
+[19:46:19.021085] route order info API data received
+[19:46:19.021235] Got arvl bus list .       (1/4) : 서울병원(47307)
+[19:46:19.021273] Getting arvl bus list ... (2/4) : 서울병원(47574)
+[19:46:19.215852] station arvl bus API Request sent
+[19:46:19.295866] station arvl bus API data received .
+[19:46:19.296011] >> Get additional bus information . [228000409](1/5)
+[19:46:19.296044] route info API Request sent
+[19:46:19.373924] route info API API data received
+[19:46:19.374007] route order info API Request sent
+[19:46:19.463585] route order info API data received
+[19:46:19.463681] >> Get additional bus information . [228000021](2/5)
+[19:46:19.463710] route info API Request sent
+[19:46:19.543503] route info API API data received
+[19:46:19.543581] route order info API Request sent
+[19:46:19.624819] route order info API data received
+[19:46:19.624918] >> Get additional bus information . [228000029](3/5)
+[19:46:19.624949] route info API Request sent
+[19:46:19.684070] route info API API data received
+[19:46:19.684150] route order info API Request sent
+[19:46:19.773524] route order info API data received
+[19:46:19.773620] >> Get additional bus information . [228000108](4/5)
+[19:46:19.773651] route info API Request sent
+[19:46:19.821774] route info API API data received
+[19:46:19.821854] route order info API Request sent
+[19:46:19.928238] route order info API data received
+[19:46:19.928335] >> Get additional bus information . [228000136](5/5)
+[19:46:19.928365] route info API Request sent
+[19:46:19.980190] route info API API data received
+[19:46:19.980267] route order info API Request sent
+[19:46:20.059355] route order info API data received
+[19:46:20.059521] Got arvl bus list .       (2/4) : 서울병원(47574)
+[19:46:20.059559] Getting arvl bus list ... (3/4) : 덕영고등학교(56151)
+[19:46:20.232015] station arvl bus API Request sent
+[19:46:20.287614] station arvl bus API data received .
+[19:46:20.287716] >> Get additional bus information . [241426001](1/1)
+[19:46:20.287745] route info API Request sent
+[19:46:20.365130] route info API API data received
+[19:46:20.365208] route order info API Request sent
+[19:46:20.475587] route order info API data received
+[19:46:20.475739] Got arvl bus list .       (3/4) : 덕영고등학교(56151)
+[19:46:20.475778] Getting arvl bus list ... (4/4) : 덕영고등학교(56154)
+[19:46:20.649078] station arvl bus API Request sent
+[19:46:20.722159] station arvl bus API data received .
+[19:46:20.722262] >> Get additional bus information . [241426001](1/1)
+[19:46:20.722291] route info API Request sent
+[19:46:20.830221] route info API API data received
+[19:46:20.830299] route order info API Request sent
+[19:46:20.961937] route order info API data received
+[19:46:20.962083] Got arvl bus list .       (4/4) : 덕영고등학교(56154)
+-------------------------------------
+Refresh arvl bus list ...:   0%|          | 0/30 [00:00<?, ?it/s]Refresh arvl bus list ...:   3%|▎         | 1/30 [00:01<00:29,  1.00s/it]Refresh arvl bus list ...:   7%|▋         | 2/30 [00:02<00:28,  1.00s/it]Refresh arvl bus list ...:  10%|█         | 3/30 [00:03<00:27,  1.00s/it]Refresh arvl bus list ...:  13%|█▎        | 4/30 [00:04<00:26,  1.00s/it]Refresh arvl bus list ...:  17%|█▋        | 5/30 [00:05<00:25,  1.00s/it]Refresh arvl bus list ...:  20%|██        | 6/30 [00:06<00:24,  1.00s/it]Refresh arvl bus list ...:  23%|██▎       | 7/30 [00:07<00:23,  1.00s/it]Refresh arvl bus list ...:  27%|██▋       | 8/30 [00:08<00:22,  1.00s/it]Refresh arvl bus list ...:  30%|███       | 9/30 [00:09<00:21,  1.00s/it]Refresh arvl bus list ...:  33%|███▎      | 10/30 [00:10<00:20,  1.00s/it]Refresh arvl bus list ...:  37%|███▋      | 11/30 [00:11<00:19,  1.00s/it]Refresh arvl bus list ...:  40%|████      | 12/30 [00:12<00:18,  1.00s/it]Refresh arvl bus list ...:  43%|████▎     | 13/30 [00:13<00:17,  1.00s/it]Refresh arvl bus list ...:  47%|████▋     | 14/30 [00:14<00:16,  1.00s/it]Refresh arvl bus list ...:  50%|█████     | 15/30 [00:15<00:15,  1.00s/it]Refresh arvl bus list ...:  53%|█████▎    | 16/30 [00:16<00:14,  1.00s/it]Refresh arvl bus list ...:  57%|█████▋    | 17/30 [00:17<00:13,  1.00s/it]Refresh arvl bus list ...:  60%|██████    | 18/30 [00:18<00:12,  1.00s/it]Refresh arvl bus list ...:  63%|██████▎   | 19/30 [00:19<00:11,  1.00s/it]Refresh arvl bus list ...:  67%|██████▋   | 20/30 [00:20<00:10,  1.00s/it]Refresh arvl bus list ...:  70%|███████   | 21/30 [00:21<00:09,  1.00s/it]Refresh arvl bus list ...:  73%|███████▎  | 22/30 [00:22<00:08,  1.00s/it]Refresh arvl bus list ...:  77%|███████▋  | 23/30 [00:23<00:07,  1.00s/it]Refresh arvl bus list ...:  80%|████████  | 24/30 [00:24<00:06,  1.00s/it]Refresh arvl bus list ...:  83%|████████▎ | 25/30 [00:25<00:05,  1.00s/it]Refresh arvl bus list ...:  87%|████████▋ | 26/30 [00:26<00:04,  1.00s/it]Refresh arvl bus list ...:  90%|█████████ | 27/30 [00:27<00:03,  1.00s/it]Refresh arvl bus list ...:  93%|█████████▎| 28/30 [00:28<00:02,  1.00s/it]Refresh arvl bus list ...:  97%|█████████▋| 29/30 [00:29<00:01,  1.00s/it]Refresh arvl bus list ...: 100%|██████████| 30/30 [00:30<00:00,  1.00s/it]Refresh arvl bus list ...: 100%|██████████| 30/30 [00:30<00:00,  1.00s/it]
+----- Getting arvl bus list -----
+[19:46:51.017878] Getting arvl bus list ... (1/4) : 서울병원(47307)
+[19:46:51.184738] station arvl bus API Request sent
+[19:46:51.437720] station arvl bus API data received .
+[19:46:51.437816] >> Get additional bus information . [241426001](1/1)
+[19:46:51.437845] route info API Request sent
+[19:46:51.519285] route info API API data received
+[19:46:51.519367] route order info API Request sent
+[19:46:51.604648] route order info API data received
+[19:46:51.604795] Got arvl bus list .       (1/4) : 서울병원(47307)
+[19:46:51.605366] Getting arvl bus list ... (2/4) : 서울병원(47574)
+[19:46:51.772528] station arvl bus API Request sent
+[19:46:51.859536] station arvl bus API data received .
+[19:46:51.859655] >> Get additional bus information . [228000409](1/5)
+[19:46:51.859685] route info API Request sent
+[19:46:51.993183] route info API API data received
+[19:46:51.993263] route order info API Request sent
+[19:46:52.085065] route order info API data received
+[19:46:52.085162] >> Get additional bus information . [228000021](2/5)
+[19:46:52.085191] route info API Request sent
+[19:46:52.155345] route info API API data received
+[19:46:52.155426] route order info API Request sent
+[19:46:52.232267] route order info API data received
+[19:46:52.232364] >> Get additional bus information . [228000029](3/5)
+[19:46:52.232396] route info API Request sent
+[19:46:52.285207] route info API API data received
+[19:46:52.285287] route order info API Request sent
+[19:46:52.389232] route order info API data received
+[19:46:52.389328] >> Get additional bus information . [228000108](4/5)
+[19:46:52.389358] route info API Request sent
+[19:46:52.452874] route info API API data received
+[19:46:52.452953] route order info API Request sent
+[19:46:52.560299] route order info API data received
+[19:46:52.560397] >> Get additional bus information . [228000136](5/5)
+[19:46:52.560427] route info API Request sent
+[19:46:52.646900] route info API API data received
+[19:46:52.646979] route order info API Request sent
+[19:46:52.750216] route order info API data received
+[19:46:52.750385] Got arvl bus list .       (2/4) : 서울병원(47574)
+[19:46:52.750430] Getting arvl bus list ... (3/4) : 덕영고등학교(56151)
+[19:46:52.910438] station arvl bus API Request sent
+[19:46:52.961727] station arvl bus API data received .
+[19:46:52.961822] >> Get additional bus information . [241426001](1/1)
+[19:46:52.961852] route info API Request sent
+[19:46:53.059628] route info API API data received
+[19:46:53.059708] route order info API Request sent
+[19:46:53.174942] route order info API data received
+[19:46:53.175094] Got arvl bus list .       (3/4) : 덕영고등학교(56151)
+[19:46:53.175130] Getting arvl bus list ... (4/4) : 덕영고등학교(56154)
+[19:46:53.337685] station arvl bus API Request sent
+[19:46:53.432027] station arvl bus API data received .
+[19:46:53.432125] >> Get additional bus information . [241426001](1/1)
+[19:46:53.432153] route info API Request sent
+[19:46:53.517736] route info API API data received
+[19:46:53.517816] route order info API Request sent
+[19:46:54.592796] route order info API data received
+[19:46:54.592953] Got arvl bus list .       (4/4) : 덕영고등학교(56154)
+-------------------------------------
+Refresh arvl bus list ...:   0%|          | 0/30 [00:00<?, ?it/s]Refresh arvl bus list ...:   3%|▎         | 1/30 [00:01<00:29,  1.00s/it]Refresh arvl bus list ...:   7%|▋         | 2/30 [00:02<00:28,  1.00s/it]Refresh arvl bus list ...:  10%|█         | 3/30 [00:03<00:27,  1.00s/it]Refresh arvl bus list ...:  13%|█▎        | 4/30 [00:04<00:26,  1.00s/it]Refresh arvl bus list ...:  17%|█▋        | 5/30 [00:05<00:25,  1.00s/it]Refresh arvl bus list ...:  20%|██        | 6/30 [00:06<00:24,  1.00s/it]Refresh arvl bus list ...:  23%|██▎       | 7/30 [00:07<00:23,  1.00s/it]Refresh arvl bus list ...:  27%|██▋       | 8/30 [00:08<00:22,  1.00s/it]Refresh arvl bus list ...:  30%|███       | 9/30 [00:09<00:21,  1.00s/it]Refresh arvl bus list ...:  33%|███▎      | 10/30 [00:10<00:20,  1.00s/it]Refresh arvl bus list ...:  37%|███▋      | 11/30 [00:11<00:19,  1.00s/it]Refresh arvl bus list ...:  40%|████      | 12/30 [00:12<00:18,  1.00s/it]Refresh arvl bus list ...:  43%|████▎     | 13/30 [00:13<00:17,  1.00s/it]Refresh arvl bus list ...:  47%|████▋     | 14/30 [00:14<00:16,  1.00s/it]Refresh arvl bus list ...:  50%|█████     | 15/30 [00:15<00:15,  1.00s/it]Refresh arvl bus list ...:  53%|█████▎    | 16/30 [00:16<00:14,  1.00s/it]Refresh arvl bus list ...:  57%|█████▋    | 17/30 [00:17<00:13,  1.00s/it]Refresh arvl bus list ...:  60%|██████    | 18/30 [00:18<00:12,  1.00s/it]Refresh arvl bus list ...:  63%|██████▎   | 19/30 [00:19<00:11,  1.00s/it]Refresh arvl bus list ...:  67%|██████▋   | 20/30 [00:20<00:10,  1.00s/it]Refresh arvl bus list ...:  70%|███████   | 21/30 [00:21<00:09,  1.00s/it]Refresh arvl bus list ...:  73%|███████▎  | 22/30 [00:22<00:08,  1.00s/it]Refresh arvl bus list ...:  77%|███████▋  | 23/30 [00:23<00:07,  1.00s/it]Refresh arvl bus list ...:  80%|████████  | 24/30 [00:24<00:06,  1.00s/it]Refresh arvl bus list ...:  83%|████████▎ | 25/30 [00:25<00:05,  1.00s/it]Refresh arvl bus list ...:  87%|████████▋ | 26/30 [00:26<00:04,  1.00s/it]Refresh arvl bus list ...:  90%|█████████ | 27/30 [00:27<00:03,  1.00s/it]Refresh arvl bus list ...:  93%|█████████▎| 28/30 [00:28<00:02,  1.00s/it]Refresh arvl bus list ...:  97%|█████████▋| 29/30 [00:29<00:01,  1.00s/it]Refresh arvl bus list ...: 100%|██████████| 30/30 [00:30<00:00,  1.00s/it]Refresh arvl bus list ...: 100%|██████████| 30/30 [00:30<00:00,  1.00s/it]
+----- Getting arvl bus list -----
+[19:47:24.640057] Getting arvl bus list ... (1/4) : 서울병원(47307)
+[19:47:24.798383] station arvl bus API Request sent
+[19:47:24.882194] station arvl bus API data received .
+[19:47:24.882290] >> Get additional bus information . [241426001](1/1)
+[19:47:24.882320] route info API Request sent
+[19:47:24.955003] route info API API data received
+[19:47:24.955082] route order info API Request sent
+[19:47:25.434608] route order info API data received
+[19:47:25.434753] Got arvl bus list .       (1/4) : 서울병원(47307)
+[19:47:25.434788] Getting arvl bus list ... (2/4) : 서울병원(47574)
+[19:47:25.690053] station arvl bus API Request sent
+[19:47:25.768522] station arvl bus API data received .
+[19:47:25.768633] >> Get additional bus information . [228000409](1/5)
+[19:47:25.768665] route info API Request sent
+[19:47:25.847088] route info API API data received
+[19:47:25.847165] route order info API Request sent
+[19:47:25.941297] route order info API data received
+[19:47:25.941414] >> Get additional bus information . [228000021](2/5)
+[19:47:25.941445] route info API Request sent
+[19:47:26.033453] route info API API data received
+[19:47:26.033533] route order info API Request sent
+[19:47:26.108976] route order info API data received
+[19:47:26.109074] >> Get additional bus information . [228000029](3/5)
+[19:47:26.109105] route info API Request sent
+[19:47:26.188728] route info API API data received
+[19:47:26.188806] route order info API Request sent
+[19:47:26.264340] route order info API data received
+[19:47:26.264437] >> Get additional bus information . [228000108](4/5)
+[19:47:26.264466] route info API Request sent
+[19:47:26.342764] route info API API data received
+[19:47:26.342843] route order info API Request sent
+[19:47:26.426003] route order info API data received
+[19:47:26.426102] >> Get additional bus information . [228000136](5/5)
+[19:47:26.426132] route info API Request sent
+[19:47:26.532786] route info API API data received
+[19:47:26.532864] route order info API Request sent
+[19:47:26.622604] route order info API data received
+[19:47:26.622773] Got arvl bus list .       (2/4) : 서울병원(47574)
+[19:47:26.622809] Getting arvl bus list ... (3/4) : 덕영고등학교(56151)
+[19:47:26.826702] station arvl bus API Request sent
+[19:47:26.929959] station arvl bus API data received .
+[19:47:26.930056] >> Get additional bus information . [241426001](1/1)
+[19:47:26.930085] route info API Request sent
+[19:47:27.024133] route info API API data received
+[19:47:27.024213] route order info API Request sent
+[19:47:27.132048] route order info API data received
+[19:47:27.132196] Got arvl bus list .       (3/4) : 덕영고등학교(56151)
+[19:47:27.132230] Getting arvl bus list ... (4/4) : 덕영고등학교(56154)
+[19:47:27.318194] station arvl bus API Request sent
+[19:47:27.405066] station arvl bus API data received .
+[19:47:27.405163] >> Get additional bus information . [241426001](1/1)
+[19:47:27.405191] route info API Request sent
+[19:47:27.457661] route info API API data received
+[19:47:27.457741] route order info API Request sent
+[19:47:27.562656] route order info API data received
+[19:47:27.562800] Got arvl bus list .       (4/4) : 덕영고등학교(56154)
+-------------------------------------
+Refresh arvl bus list ...:   0%|          | 0/30 [00:00<?, ?it/s]Refresh arvl bus list ...:   3%|▎         | 1/30 [00:01<00:29,  1.00s/it]Refresh arvl bus list ...:   7%|▋         | 2/30 [00:02<00:28,  1.00s/it]Refresh arvl bus list ...:  10%|█         | 3/30 [00:03<00:27,  1.00s/it]Refresh arvl bus list ...:  13%|█▎        | 4/30 [00:04<00:26,  1.00s/it]Refresh arvl bus list ...:  17%|█▋        | 5/30 [00:05<00:25,  1.00s/it]Refresh arvl bus list ...:  20%|██        | 6/30 [00:06<00:24,  1.00s/it]Refresh arvl bus list ...:  23%|██▎       | 7/30 [00:07<00:23,  1.00s/it]Refresh arvl bus list ...:  27%|██▋       | 8/30 [00:08<00:22,  1.00s/it]Refresh arvl bus list ...:  30%|███       | 9/30 [00:09<00:21,  1.00s/it]Refresh arvl bus list ...:  33%|███▎      | 10/30 [00:10<00:20,  1.00s/it]Refresh arvl bus list ...:  37%|███▋      | 11/30 [00:11<00:19,  1.00s/it]Refresh arvl bus list ...:  40%|████      | 12/30 [00:12<00:18,  1.00s/it]Refresh arvl bus list ...:  43%|████▎     | 13/30 [00:13<00:17,  1.00s/it]Refresh arvl bus list ...:  47%|████▋     | 14/30 [00:14<00:16,  1.00s/it]Refresh arvl bus list ...:  50%|█████     | 15/30 [00:15<00:15,  1.00s/it]Refresh arvl bus list ...:  53%|█████▎    | 16/30 [00:16<00:14,  1.00s/it]Refresh arvl bus list ...:  57%|█████▋    | 17/30 [00:17<00:13,  1.00s/it]Refresh arvl bus list ...:  60%|██████    | 18/30 [00:18<00:12,  1.00s/it]Refresh arvl bus list ...:  63%|██████▎   | 19/30 [00:19<00:11,  1.00s/it]Refresh arvl bus list ...:  67%|██████▋   | 20/30 [00:20<00:10,  1.00s/it]Refresh arvl bus list ...:  70%|███████   | 21/30 [00:21<00:09,  1.00s/it]Refresh arvl bus list ...:  73%|███████▎  | 22/30 [00:22<00:08,  1.00s/it]Refresh arvl bus list ...:  77%|███████▋  | 23/30 [00:23<00:07,  1.00s/it]Refresh arvl bus list ...:  80%|████████  | 24/30 [00:24<00:06,  1.00s/it]Refresh arvl bus list ...:  83%|████████▎ | 25/30 [00:25<00:05,  1.00s/it]FYI: not running as root which means we can't properly control timing unless this is a real-time kernel. Expect color degradation. Consider running as root with sudo.
+Can't set realtime thread priority=99: Operation not permitted.
+	You are probably not running as root ?
+	This will seriously mess with color stability and flicker
+	of the matrix. Please run as `root` (e.g. by invoking this
+	program with `sudo`), or setting the capability on this
+	binary by calling
+	sudo setcap 'cap_sys_nice=eip' /usr/bin/python3.11
+
+
+----- System Testing -----
+--------------------------
+----- Getting bus station list -----
+[19:48:13.008808] Bus station list API Request sent
+[19:48:13.344103] Got bus station list
+------------------------------------
+----- Getting arvl bus list -----
+[19:48:13.349022] Getting arvl bus list ... (1/4) : 서울병원(47307)
+[19:48:13.501153] station arvl bus API Request sent
+[19:48:13.588817] station arvl bus API data received .
+[19:48:13.588923] >> Get additional bus information . [241426001](1/1)
+[19:48:13.588955] route info API Request sent
+[19:48:13.669010] route info API API data received
+[19:48:13.669094] route order info API Request sent
+[19:48:13.803624] route order info API data received
+[19:48:13.803773] Got arvl bus list .       (1/4) : 서울병원(47307)
+[19:48:13.803811] Getting arvl bus list ... (2/4) : 서울병원(47574)
+[19:48:13.970001] station arvl bus API Request sent
+[19:48:14.067827] station arvl bus API data received .
+[19:48:14.067967] >> Get additional bus information . [228000409](1/5)
+[19:48:14.068000] route info API Request sent
+[19:48:14.138702] route info API API data received
+[19:48:14.138787] route order info API Request sent
+[19:48:14.226398] route order info API data received
+[19:48:14.226495] >> Get additional bus information . [228000021](2/5)
+[19:48:14.226523] route info API Request sent
+[19:48:14.307355] route info API API data received
+[19:48:14.307434] route order info API Request sent
+[19:48:14.383041] route order info API data received
+[19:48:14.383135] >> Get additional bus information . [228000029](3/5)
+[19:48:14.383166] route info API Request sent
+[19:48:14.821345] route info API API data received
+[19:48:14.821471] route order info API Request sent
+[19:48:14.926593] route order info API data received
+[19:48:14.926688] >> Get additional bus information . [228000108](4/5)
+[19:48:14.926719] route info API Request sent
+[19:48:15.004708] route info API API data received
+[19:48:15.004787] route order info API Request sent
+[19:48:15.102949] route order info API data received
+[19:48:15.103046] >> Get additional bus information . [228000136](5/5)
+[19:48:15.103075] route info API Request sent
+[19:48:15.190142] route info API API data received
+[19:48:15.190218] route order info API Request sent
+[19:48:15.290318] route order info API data received
+[19:48:15.290480] Got arvl bus list .       (2/4) : 서울병원(47574)
+[19:48:15.290519] Getting arvl bus list ... (3/4) : 덕영고등학교(56151)
+[19:48:15.491171] station arvl bus API Request sent
+[19:48:15.582804] station arvl bus API data received .
+[19:48:15.582905] >> Get additional bus information . [241426001](1/1)
+[19:48:15.582933] route info API Request sent
+[19:48:15.641561] route info API API data received
+[19:48:15.641638] route order info API Request sent
+[19:48:15.752949] route order info API data received
+[19:48:15.753098] Got arvl bus list .       (3/4) : 덕영고등학교(56151)
+[19:48:15.753135] Getting arvl bus list ... (4/4) : 덕영고등학교(56154)
+[19:48:15.903153] station arvl bus API Request sent
+[19:48:15.978569] station arvl bus API data received .
+[19:48:15.978667] >> Get additional bus information . [241426001](1/1)
+[19:48:15.978696] route info API Request sent
+[19:48:16.050714] route info API API data received
+[19:48:16.050793] route order info API Request sent
+[19:48:16.161325] route order info API data received
+[19:48:16.161505] Got arvl bus list .       (4/4) : 덕영고등학교(56154)
+-------------------------------------
+Refresh arvl bus list ...:   0%|          | 0/30 [00:00<?, ?it/s]Refresh arvl bus list ...:   3%|▎         | 1/30 [00:01<00:29,  1.00s/it]Refresh arvl bus list ...:   7%|▋         | 2/30 [00:02<00:28,  1.00s/it]Refresh arvl bus list ...:  10%|█         | 3/30 [00:03<00:27,  1.00s/it]Refresh arvl bus list ...:  13%|█▎        | 4/30 [00:04<00:26,  1.00s/it]Refresh arvl bus list ...:  17%|█▋        | 5/30 [00:05<00:25,  1.00s/it]Refresh arvl bus list ...:  20%|██        | 6/30 [00:06<00:24,  1.00s/it]Refresh arvl bus list ...:  23%|██▎       | 7/30 [00:07<00:23,  1.00s/it]Refresh arvl bus list ...:  27%|██▋       | 8/30 [00:08<00:22,  1.00s/it]Refresh arvl bus list ...:  30%|███       | 9/30 [00:09<00:21,  1.00s/it]Refresh arvl bus list ...:  33%|███▎      | 10/30 [00:10<00:20,  1.00s/it]Refresh arvl bus list ...:  37%|███▋      | 11/30 [00:11<00:19,  1.00s/it]Refresh arvl bus list ...:  40%|████      | 12/30 [00:12<00:18,  1.00s/it]Refresh arvl bus list ...:  43%|████▎     | 13/30 [00:13<00:17,  1.00s/it]Refresh arvl bus list ...:  47%|████▋     | 14/30 [00:14<00:16,  1.00s/it]Refresh arvl bus list ...:  50%|█████     | 15/30 [00:15<00:15,  1.00s/it]Refresh arvl bus list ...:  53%|█████▎    | 16/30 [00:16<00:14,  1.00s/it]Refresh arvl bus list ...:  57%|█████▋    | 17/30 [00:17<00:13,  1.00s/it]Refresh arvl bus list ...:  60%|██████    | 18/30 [00:18<00:12,  1.00s/it]Refresh arvl bus list ...:  63%|██████▎   | 19/30 [00:19<00:11,  1.00s/it]Refresh arvl bus list ...:  67%|██████▋   | 20/30 [00:20<00:10,  1.00s/it]Refresh arvl bus list ...:  70%|███████   | 21/30 [00:21<00:09,  1.00s/it]Refresh arvl bus list ...:  73%|███████▎  | 22/30 [00:22<00:08,  1.00s/it]Refresh arvl bus list ...:  77%|███████▋  | 23/30 [00:23<00:07,  1.00s/it]Refresh arvl bus list ...:  80%|████████  | 24/30 [00:24<00:06,  1.00s/it]Refresh arvl bus list ...:  83%|████████▎ | 25/30 [00:25<00:05,  1.00s/it]Refresh arvl bus list ...:  87%|████████▋ | 26/30 [00:26<00:04,  1.00s/it]Refresh arvl bus list ...:  90%|█████████ | 27/30 [00:27<00:03,  1.00s/it]Refresh arvl bus list ...:  93%|█████████▎| 28/30 [00:28<00:02,  1.00s/it]Refresh arvl bus list ...:  97%|█████████▋| 29/30 [00:29<00:01,  1.00s/it]Refresh arvl bus list ...: 100%|██████████| 30/30 [00:30<00:00,  1.00s/it]Refresh arvl bus list ...: 100%|██████████| 30/30 [00:30<00:00,  1.00s/it]
+----- Getting arvl bus list -----
+[19:48:46.226309] Getting arvl bus list ... (1/4) : 서울병원(47307)
+[19:48:46.397210] station arvl bus API Request sent
+[19:48:46.481994] station arvl bus API data received .
+[19:48:46.482091] >> Get additional bus information . [241426001](1/1)
+[19:48:46.482120] route info API Request sent
+[19:48:46.564953] route info API API data received
+[19:48:46.565035] route order info API Request sent
+[19:48:46.678588] route order info API data received
+[19:48:46.678736] Got arvl bus list .       (1/4) : 서울병원(47307)
+[19:48:46.678775] Getting arvl bus list ... (2/4) : 서울병원(47574)
+[19:48:46.839524] station arvl bus API Request sent
+[19:48:47.142467] station arvl bus API data received .
+[19:48:47.142587] >> Get additional bus information . [228000409](1/5)
+[19:48:47.142618] route info API Request sent
+[19:48:47.229826] route info API API data received
+[19:48:47.229905] route order info API Request sent
+[19:48:47.333283] route order info API data received
+[19:48:47.333378] >> Get additional bus information . [228000021](2/5)
+[19:48:47.333433] route info API Request sent
+[19:48:47.414034] route info API API data received
+[19:48:47.414113] route order info API Request sent
+[19:48:47.498809] route order info API data received
+[19:48:47.498908] >> Get additional bus information . [228000029](3/5)
+[19:48:47.498939] route info API Request sent
+[19:48:47.638780] route info API API data received
+[19:48:47.638862] route order info API Request sent
+[19:48:48.350008] route order info API data received
+[19:48:48.350113] >> Get additional bus information . [228000108](4/5)
+[19:48:48.350143] route info API Request sent
+[19:48:48.419681] route info API API data received
+[19:48:48.419759] route order info API Request sent
+[19:48:48.517018] route order info API data received
+[19:48:48.517117] >> Get additional bus information . [228000136](5/5)
+[19:48:48.517147] route info API Request sent
+[19:48:48.568889] route info API API data received
+[19:48:48.568969] route order info API Request sent
+[19:48:48.672814] route order info API data received
+[19:48:48.672985] Got arvl bus list .       (2/4) : 서울병원(47574)
+[19:48:48.673033] Getting arvl bus list ... (3/4) : 덕영고등학교(56151)
+[19:48:48.841918] station arvl bus API Request sent
+[19:48:53.940879] station arvl bus API data received .
+[19:48:53.940974] >> Get additional bus information . [241426001](1/1)
+[19:48:53.941003] route info API Request sent
+[19:48:54.024748] route info API API data received
+[19:48:54.024829] route order info API Request sent
+[19:48:54.125081] route order info API data received
+[19:48:54.125231] Got arvl bus list .       (3/4) : 덕영고등학교(56151)
+[19:48:54.125269] Getting arvl bus list ... (4/4) : 덕영고등학교(56154)
+[19:48:54.346477] station arvl bus API Request sent
+[19:48:54.422539] [api_data_error_check] 4 결과가 존재하지 않습니다.
+[19:48:54.422638] Got arvl bus list .       (4/4) : 덕영고등학교(56154)
+-------------------------------------
+Refresh arvl bus list ...:   0%|          | 0/30 [00:00<?, ?it/s]Refresh arvl bus list ...:   3%|▎         | 1/30 [00:01<00:29,  1.00s/it]Refresh arvl bus list ...:   7%|▋         | 2/30 [00:02<00:28,  1.00s/it]Refresh arvl bus list ...:  10%|█         | 3/30 [00:03<00:27,  1.00s/it]Refresh arvl bus list ...:  13%|█▎        | 4/30 [00:04<00:26,  1.00s/it]Refresh arvl bus list ...:  17%|█▋        | 5/30 [00:05<00:25,  1.00s/it]Refresh arvl bus list ...:  20%|██        | 6/30 [00:06<00:24,  1.00s/it]Refresh arvl bus list ...:  23%|██▎       | 7/30 [00:07<00:23,  1.00s/it]Refresh arvl bus list ...:  27%|██▋       | 8/30 [00:08<00:22,  1.00s/it]Refresh arvl bus list ...:  30%|███       | 9/30 [00:09<00:21,  1.00s/it]Refresh arvl bus list ...:  33%|███▎      | 10/30 [00:10<00:20,  1.00s/it]Refresh arvl bus list ...:  37%|███▋      | 11/30 [00:11<00:19,  1.00s/it]Refresh arvl bus list ...:  40%|████      | 12/30 [00:12<00:18,  1.00s/it]Refresh arvl bus list ...:  43%|████▎     | 13/30 [00:13<00:17,  1.00s/it]Refresh arvl bus list ...:  47%|████▋     | 14/30 [00:14<00:16,  1.00s/it]Refresh arvl bus list ...:  50%|█████     | 15/30 [00:15<00:15,  1.00s/it]Refresh arvl bus list ...:  53%|█████▎    | 16/30 [00:16<00:14,  1.00s/it]Refresh arvl bus list ...:  57%|█████▋    | 17/30 [00:17<00:13,  1.00s/it]Refresh arvl bus list ...:  60%|██████    | 18/30 [00:18<00:12,  1.00s/it]Refresh arvl bus list ...:  63%|██████▎   | 19/30 [00:19<00:11,  1.00s/it]Refresh arvl bus list ...:  67%|██████▋   | 20/30 [00:20<00:10,  1.00s/it]Refresh arvl bus list ...:  70%|███████   | 21/30 [00:21<00:09,  1.00s/it]Refresh arvl bus list ...:  73%|███████▎  | 22/30 [00:22<00:08,  1.00s/it]Refresh arvl bus list ...:  77%|███████▋  | 23/30 [00:23<00:07,  1.00s/it]Refresh arvl bus list ...:  80%|████████  | 24/30 [00:24<00:06,  1.00s/it]Refresh arvl bus list ...:  83%|████████▎ | 25/30 [00:25<00:05,  1.00s/it]Refresh arvl bus list ...:  87%|████████▋ | 26/30 [00:26<00:04,  1.00s/it]Refresh arvl bus list ...:  90%|█████████ | 27/30 [00:27<00:03,  1.00s/it]Refresh arvl bus list ...:  93%|█████████▎| 28/30 [00:28<00:02,  1.00s/it]Refresh arvl bus list ...:  97%|█████████▋| 29/30 [00:29<00:01,  1.00s/it]Refresh arvl bus list ...: 100%|██████████| 30/30 [00:30<00:00,  1.00s/it]Refresh arvl bus list ...: 100%|██████████| 30/30 [00:30<00:00,  1.00s/it]
+----- Getting arvl bus list -----
+[19:49:24.451654] Getting arvl bus list ... (1/4) : 서울병원(47307)
+[19:49:24.667962] station arvl bus API Request sent
+[19:49:24.759878] station arvl bus API data received .
+[19:49:24.759973] >> Get additional bus information . [241426001](1/1)
+[19:49:24.760003] route info API Request sent
+[19:49:24.834492] route info API API data received
+[19:49:24.834573] route order info API Request sent
+[19:49:24.947567] route order info API data received
+[19:49:24.947714] Got arvl bus list .       (1/4) : 서울병원(47307)
+[19:49:24.947750] Getting arvl bus list ... (2/4) : 서울병원(47574)
+[19:49:25.114607] station arvl bus API Request sent
+[19:49:25.357287] station arvl bus API data received .
+[19:49:25.357439] >> Get additional bus information . [228000409](1/5)
+[19:49:25.357472] route info API Request sent
+[19:49:25.436765] route info API API data received
+[19:49:25.436880] route order info API Request sent
+[19:49:25.512375] route order info API data received
+[19:49:25.512467] >> Get additional bus information . [228000021](2/5)
+[19:49:25.512497] route info API Request sent
+[19:49:25.627275] route info API API data received
+[19:49:25.627365] route order info API Request sent
+[19:49:25.734311] route order info API data received
+[19:49:25.734408] >> Get additional bus information . [228000029](3/5)
+[19:49:25.734439] route info API Request sent
+[19:49:25.792432] route info API API data received
+[19:49:25.792511] route order info API Request sent
+[19:49:25.873875] route order info API data received
+[19:49:25.873972] >> Get additional bus information . [228000108](4/5)
+[19:49:25.874000] route info API Request sent
+[19:49:25.948636] route info API API data received
+[19:49:25.948714] route order info API Request sent
+[19:49:26.051682] route order info API data received
+[19:49:26.051783] >> Get additional bus information . [228000136](5/5)
+[19:49:26.051812] route info API Request sent
+[19:49:26.133711] route info API API data received
+[19:49:26.133794] route order info API Request sent
+[19:49:26.224965] route order info API data received
+[19:49:26.225134] Got arvl bus list .       (2/4) : 서울병원(47574)
+[19:49:26.225169] Getting arvl bus list ... (3/4) : 덕영고등학교(56151)
+[19:49:26.425290] station arvl bus API Request sent
+[19:49:26.511914] station arvl bus API data received .
+[19:49:26.512008] >> Get additional bus information . [241426001](1/1)
+[19:49:26.512037] route info API Request sent
+[19:49:26.582917] route info API API data received
+[19:49:26.582995] route order info API Request sent
+[19:49:26.705242] route order info API data received
+[19:49:26.705376] Got arvl bus list .       (3/4) : 덕영고등학교(56151)
+[19:49:26.705442] Getting arvl bus list ... (4/4) : 덕영고등학교(56154)
+[19:49:26.869245] station arvl bus API Request sent
+[19:49:26.954536] [api_data_error_check] 4 결과가 존재하지 않습니다.
+[19:49:26.954629] Got arvl bus list .       (4/4) : 덕영고등학교(56154)
+-------------------------------------
+Refresh arvl bus list ...:   0%|          | 0/30 [00:00<?, ?it/s]Refresh arvl bus list ...:   3%|▎         | 1/30 [00:01<00:29,  1.00s/it]Refresh arvl bus list ...:   7%|▋         | 2/30 [00:02<00:28,  1.00s/it]Refresh arvl bus list ...:  10%|█         | 3/30 [00:03<00:27,  1.00s/it]Refresh arvl bus list ...:  13%|█▎        | 4/30 [00:04<00:26,  1.00s/it]Refresh arvl bus list ...:  17%|█▋        | 5/30 [00:05<00:25,  1.00s/it]Refresh arvl bus list ...:  20%|██        | 6/30 [00:06<00:24,  1.01s/it]Refresh arvl bus list ...:  23%|██▎       | 7/30 [00:07<00:23,  1.01s/it]Refresh arvl bus list ...:  27%|██▋       | 8/30 [00:08<00:22,  1.01s/it]Refresh arvl bus list ...:  30%|███       | 9/30 [00:09<00:21,  1.01s/it]Refresh arvl bus list ...:  33%|███▎      | 10/30 [00:10<00:20,  1.01s/it]Refresh arvl bus list ...:  37%|███▋      | 11/30 [00:11<00:19,  1.01s/it]Refresh arvl bus list ...:  40%|████      | 12/30 [00:12<00:18,  1.01s/it]Refresh arvl bus list ...:  43%|████▎     | 13/30 [00:13<00:17,  1.01s/it]Refresh arvl bus list ...:  47%|████▋     | 14/30 [00:14<00:16,  1.01s/it]Refresh arvl bus list ...:  50%|█████     | 15/30 [00:15<00:15,  1.01s/it]Refresh arvl bus list ...:  53%|█████▎    | 16/30 [00:16<00:14,  1.01s/it]Refresh arvl bus list ...:  57%|█████▋    | 17/30 [00:17<00:13,  1.01s/it]Refresh arvl bus list ...:  60%|██████    | 18/30 [00:18<00:12,  1.01s/it]Refresh arvl bus list ...:  63%|██████▎   | 19/30 [00:19<00:11,  1.01s/it]Refresh arvl bus list ...:  67%|██████▋   | 20/30 [00:20<00:10,  1.01s/it]Refresh arvl bus list ...:  70%|███████   | 21/30 [00:21<00:09,  1.01s/it]Refresh arvl bus list ...:  73%|███████▎  | 22/30 [00:22<00:08,  1.01s/it]Refresh arvl bus list ...:  77%|███████▋  | 23/30 [00:23<00:07,  1.01s/it]Refresh arvl bus list ...:  80%|████████  | 24/30 [00:24<00:06,  1.01s/it]Refresh arvl bus list ...:  83%|████████▎ | 25/30 [00:25<00:05,  1.01s/it]Refresh arvl bus list ...:  87%|████████▋ | 26/30 [00:26<00:04,  1.01s/it]Refresh arvl bus list ...:  90%|█████████ | 27/30 [00:27<00:03,  1.01s/it]Refresh arvl bus list ...:  93%|█████████▎| 28/30 [00:28<00:02,  1.01s/it]Refresh arvl bus list ...:  97%|█████████▋| 29/30 [00:29<00:01,  1.01s/it]Refresh arvl bus list ...: 100%|██████████| 30/30 [00:30<00:00,  1.01s/it]Refresh arvl bus list ...: 100%|██████████| 30/30 [00:30<00:00,  1.01s/it]
+----- Getting arvl bus list -----
+[19:49:57.278322] Getting arvl bus list ... (1/4) : 서울병원(47307)
+[19:49:57.486774] station arvl bus API Request sent
+[19:49:57.642124] station arvl bus API data received .
+[19:49:57.642218] >> Get additional bus information . [241426001](1/1)
+[19:49:57.642248] route info API Request sent
+[19:49:57.779770] route info API API data received
+[19:49:57.779848] route order info API Request sent
+[19:49:57.954941] route order info API data received
+[19:49:57.955090] Got arvl bus list .       (1/4) : 서울병원(47307)
+[19:49:57.955124] Getting arvl bus list ... (2/4) : 서울병원(47574)
+[19:49:58.176497] station arvl bus API Request sent
+[19:49:58.307544] station arvl bus API data received .
+[19:49:58.307657] >> Get additional bus information . [228000409](1/5)
+[19:49:58.307687] route info API Request sent
+[19:49:58.416297] route info API API data received
+[19:49:58.416394] route order info API Request sent
+[19:49:58.552778] route order info API data received
+[19:49:58.552878] >> Get additional bus information . [228000021](2/5)
+[19:49:58.552907] route info API Request sent
+[19:49:58.664080] route info API API data received
+[19:49:58.664161] route order info API Request sent
+[19:49:58.902239] route order info API data received
+[19:49:58.902336] >> Get additional bus information . [228000029](3/5)
+[19:49:58.902368] route info API Request sent
+[19:49:59.013376] route info API API data received
+[19:49:59.013479] route order info API Request sent
+[19:49:59.155464] route order info API data received
+[19:49:59.155563] >> Get additional bus information . [228000108](4/5)
+[19:49:59.155592] route info API Request sent
+[19:49:59.282071] route info API API data received
+[19:49:59.282149] route order info API Request sent
+[19:49:59.437492] route order info API data received
+[19:49:59.437621] >> Get additional bus information . [228000136](5/5)
+[19:49:59.437655] route info API Request sent
+[19:49:59.552897] route info API API data received
+[19:49:59.552977] route order info API Request sent
+[19:49:59.689151] route order info API data received
+[19:49:59.689323] Got arvl bus list .       (2/4) : 서울병원(47574)
+[19:49:59.689357] Getting arvl bus list ... (3/4) : 덕영고등학교(56151)
+[19:49:59.910724] station arvl bus API Request sent
+[19:50:00.017403] station arvl bus API data received .
+[19:50:00.017501] >> Get additional bus information . [241426001](1/1)
+[19:50:00.017529] route info API Request sent
+[19:50:00.290509] route info API API data received
+[19:50:00.290589] route order info API Request sent
+[19:50:00.460018] route order info API data received
+[19:50:00.460186] Got arvl bus list .       (3/4) : 덕영고등학교(56151)
+[19:50:00.460229] Getting arvl bus list ... (4/4) : 덕영고등학교(56154)
+[19:50:00.681885] station arvl bus API Request sent
+[19:50:00.961646] [api_data_error_check] 4 결과가 존재하지 않습니다.
+[19:50:00.961740] Got arvl bus list .       (4/4) : 덕영고등학교(56154)
+-------------------------------------
+Refresh arvl bus list ...:   0%|          | 0/30 [00:00<?, ?it/s]Refresh arvl bus list ...:   3%|▎         | 1/30 [00:01<00:29,  1.01s/it]FYI: not running as root which means we can't properly control timing unless this is a real-time kernel. Expect color degradation. Consider running as root with sudo.
+Can't set realtime thread priority=99: Operation not permitted.
+	You are probably not running as root ?
+	This will seriously mess with color stability and flicker
+	of the matrix. Please run as `root` (e.g. by invoking this
+	program with `sudo`), or setting the capability on this
+	binary by calling
+	sudo setcap 'cap_sys_nice=eip' /usr/bin/python3.11
+
+
+---------Program Start---------
+작업이 잘 실행되었습니다.
+----- Getting bus station list -----
+[20:32:21.017037] Bus station list API Request sent
+[20:32:21.363458] Got bus station list
+------------------------------------
+----- Getting arvl bus list -----
+[20:32:21.368405] Getting arvl bus list ... (1/4) : 서울병원(47307)
+[20:32:21.845259] station arvl bus API Request sent
+[20:32:21.909230] station arvl bus API data received .
+[20:32:21.909341] >> Get additional bus information . [241426001](1/2)
+[20:32:21.909374] route info API Request sent
+[20:32:21.980470] route info API API data received
+[20:32:21.980551] route order info API Request sent
+[20:32:22.089919] route order info API data received
+[20:32:22.090028] >> Get additional bus information . [241426001](2/2)
+[20:32:22.090062] route info API Request sent
+[20:32:22.166170] route info API API data received
+[20:32:22.166249] route order info API Request sent
+[20:32:22.279031] route order info API data received
+[20:32:22.279193] Got arvl bus list .       (1/4) : 서울병원(47307)
+[20:32:22.279233] Getting arvl bus list ... (2/4) : 서울병원(47574)
+[20:32:22.454373] station arvl bus API Request sent
+[20:32:22.538488] station arvl bus API data received .
+[20:32:22.538631] >> Get additional bus information . [228000021](1/4)
+[20:32:22.538664] route info API Request sent
+[20:32:22.598142] route info API API data received
+[20:32:22.598223] route order info API Request sent
+[20:32:22.697226] route order info API data received
+[20:32:22.697323] >> Get additional bus information . [228000029](2/4)
+[20:32:22.697353] route info API Request sent
+[20:32:22.774230] route info API API data received
+[20:32:22.774308] route order info API Request sent
+[20:32:22.867650] route order info API data received
+[20:32:22.867746] >> Get additional bus information . [228000133](3/4)
+[20:32:22.867776] route info API Request sent
+[20:32:22.941533] route info API API data received
+[20:32:22.941611] route order info API Request sent
+[20:32:23.025244] route order info API data received
+[20:32:23.025343] >> Get additional bus information . [228000136](4/4)
+[20:32:23.025373] route info API Request sent
+[20:32:23.101579] route info API API data received
+[20:32:23.101657] route order info API Request sent
+[20:32:23.205168] route order info API data received
+[20:32:23.205338] Got arvl bus list .       (2/4) : 서울병원(47574)
+[20:32:23.205377] Getting arvl bus list ... (3/4) : 덕영고등학교(56151)
+[20:32:23.460232] station arvl bus API Request sent
+[20:32:23.544073] station arvl bus API data received .
+[20:32:23.544186] >> Get additional bus information . [241426001](1/1)
+[20:32:23.544215] route info API Request sent
+[20:32:23.614637] route info API API data received
+[20:32:23.614719] route order info API Request sent
+[20:32:23.734829] route order info API data received
+[20:32:23.734979] Got arvl bus list .       (3/4) : 덕영고등학교(56151)
+[20:32:23.735018] Getting arvl bus list ... (4/4) : 덕영고등학교(56154)
+[20:32:23.934726] station arvl bus API Request sent
+[20:32:24.000080] station arvl bus API data received .
+[20:32:24.000184] >> Get additional bus information . [241426001](1/1)
+[20:32:24.000213] route info API Request sent
+[20:32:24.077926] route info API API data received
+[20:32:24.078005] route order info API Request sent
+[20:32:24.173886] route order info API data received
+[20:32:24.174040] Got arvl bus list .       (4/4) : 덕영고등학교(56154)
+-------------------------------------
+-------------------------------
+Refresh arvl bus list ...:   0%|          | 0/30 [00:00<?, ?it/s]Refresh arvl bus list ...:   3%|▎         | 1/30 [00:01<00:29,  1.00s/it]Refresh arvl bus list ...:   7%|▋         | 2/30 [00:02<00:28,  1.00s/it]Refresh arvl bus list ...:  10%|█         | 3/30 [00:03<00:27,  1.00s/it]Refresh arvl bus list ...:  13%|█▎        | 4/30 [00:04<00:26,  1.00s/it]Refresh arvl bus list ...:  17%|█▋        | 5/30 [00:05<00:25,  1.00s/it]Refresh arvl bus list ...:  20%|██        | 6/30 [00:06<00:24,  1.00s/it]Refresh arvl bus list ...:  23%|██▎       | 7/30 [00:07<00:23,  1.00s/it]Refresh arvl bus list ...:  27%|██▋       | 8/30 [00:08<00:22,  1.00s/it]Refresh arvl bus list ...:  30%|███       | 9/30 [00:09<00:21,  1.00s/it]Refresh arvl bus list ...:  33%|███▎      | 10/30 [00:10<00:20,  1.00s/it]Refresh arvl bus list ...:  37%|███▋      | 11/30 [00:11<00:19,  1.00s/it]Refresh arvl bus list ...:  40%|████      | 12/30 [00:12<00:18,  1.00s/it]Refresh arvl bus list ...:  43%|████▎     | 13/30 [00:13<00:17,  1.00s/it]Refresh arvl bus list ...:  47%|████▋     | 14/30 [00:14<00:16,  1.00s/it]Refresh arvl bus list ...:  50%|█████     | 15/30 [00:15<00:15,  1.00s/it]Refresh arvl bus list ...:  53%|█████▎    | 16/30 [00:16<00:14,  1.00s/it]Refresh arvl bus list ...:  57%|█████▋    | 17/30 [00:17<00:13,  1.00s/it]Refresh arvl bus list ...:  60%|██████    | 18/30 [00:18<00:12,  1.00s/it]Refresh arvl bus list ...:  63%|██████▎   | 19/30 [00:19<00:11,  1.00s/it]Refresh arvl bus list ...:  67%|██████▋   | 20/30 [00:20<00:10,  1.00s/it]Refresh arvl bus list ...:  70%|███████   | 21/30 [00:21<00:09,  1.00s/it]Refresh arvl bus list ...:  73%|███████▎  | 22/30 [00:22<00:08,  1.00s/it]Refresh arvl bus list ...:  77%|███████▋  | 23/30 [00:23<00:07,  1.00s/it]Refresh arvl bus list ...:  80%|████████  | 24/30 [00:24<00:06,  1.00s/it]Refresh arvl bus list ...:  83%|████████▎ | 25/30 [00:25<00:05,  1.00s/it]Refresh arvl bus list ...:  87%|████████▋ | 26/30 [00:26<00:04,  1.00s/it]Refresh arvl bus list ...:  90%|█████████ | 27/30 [00:27<00:03,  1.00s/it]Refresh arvl bus list ...:  93%|█████████▎| 28/30 [00:28<00:02,  1.00s/it]Refresh arvl bus list ...:  97%|█████████▋| 29/30 [00:29<00:01,  1.00s/it]Refresh arvl bus list ...: 100%|██████████| 30/30 [00:30<00:00,  1.00s/it]Refresh arvl bus list ...: 100%|██████████| 30/30 [00:30<00:00,  1.00s/it]
+----- Getting arvl bus list -----
+[20:32:54.240132] Getting arvl bus list ... (1/4) : 서울병원(47307)
+[20:32:54.407450] station arvl bus API Request sent
+[20:32:54.505096] station arvl bus API data received .
+[20:32:54.505202] >> Get additional bus information . [241426001](1/2)
+[20:32:54.505231] route info API Request sent
+[20:32:54.568868] route info API API data received
+[20:32:54.568952] route order info API Request sent
+[20:32:54.661115] route order info API data received
+[20:32:54.661217] >> Get additional bus information . [241426001](2/2)
+[20:32:54.661246] route info API Request sent
+[20:32:54.731435] route info API API data received
+[20:32:54.731516] route order info API Request sent
+[20:32:54.848658] route order info API data received
+[20:32:54.848817] Got arvl bus list .       (1/4) : 서울병원(47307)
+[20:32:54.848856] Getting arvl bus list ... (2/4) : 서울병원(47574)
+[20:32:55.327307] station arvl bus API Request sent
+[20:32:55.432159] station arvl bus API data received .
+[20:32:55.432270] >> Get additional bus information . [228000021](1/4)
+[20:32:55.432299] route info API Request sent
+[20:32:55.551685] route info API API data received
+[20:32:55.551764] route order info API Request sent
+[20:32:55.704495] route order info API data received
+[20:32:55.704589] >> Get additional bus information . [228000029](2/4)
+[20:32:55.704619] route info API Request sent
+[20:32:55.794575] route info API API data received
+[20:32:55.794654] route order info API Request sent
+[20:32:55.876097] route order info API data received
+[20:32:55.876193] >> Get additional bus information . [228000133](3/4)
+[20:32:55.876222] route info API Request sent
+[20:32:55.961740] route info API API data received
+[20:32:55.961821] route order info API Request sent
+[20:32:56.082660] route order info API data received
+[20:32:56.082762] >> Get additional bus information . [228000136](4/4)
+[20:32:56.082793] route info API Request sent
+[20:32:56.166468] route info API API data received
+[20:32:56.166546] route order info API Request sent
+[20:32:56.244475] route order info API data received
+[20:32:56.244642] Got arvl bus list .       (2/4) : 서울병원(47574)
+[20:32:56.244688] Getting arvl bus list ... (3/4) : 덕영고등학교(56151)
+[20:32:56.418426] station arvl bus API Request sent
+[20:32:56.471807] station arvl bus API data received .
+[20:32:56.471900] >> Get additional bus information . [241426001](1/1)
+[20:32:56.471929] route info API Request sent
+[20:32:56.541045] route info API API data received
+[20:32:56.541127] route order info API Request sent
+[20:32:56.635830] route order info API data received
+[20:32:56.635989] Got arvl bus list .       (3/4) : 덕영고등학교(56151)
+[20:32:56.636026] Getting arvl bus list ... (4/4) : 덕영고등학교(56154)
+[20:32:56.784353] station arvl bus API Request sent
+[20:32:56.855973] station arvl bus API data received .
+[20:32:56.856070] >> Get additional bus information . [241426001](1/1)
+[20:32:56.856099] route info API Request sent
+[20:32:56.921742] route info API API data received
+[20:32:56.921822] route order info API Request sent
+[20:32:57.003991] route order info API data received
+[20:32:57.004140] Got arvl bus list .       (4/4) : 덕영고등학교(56154)
+-------------------------------------
+Refresh arvl bus list ...:   0%|          | 0/30 [00:00<?, ?it/s]Refresh arvl bus list ...:   3%|▎         | 1/30 [00:01<00:29,  1.00s/it]Refresh arvl bus list ...:   7%|▋         | 2/30 [00:02<00:28,  1.00s/it]Refresh arvl bus list ...:  10%|█         | 3/30 [00:03<00:27,  1.00s/it]Refresh arvl bus list ...:  13%|█▎        | 4/30 [00:04<00:26,  1.00s/it]Refresh arvl bus list ...:  17%|█▋        | 5/30 [00:05<00:25,  1.00s/it]Refresh arvl bus list ...:  20%|██        | 6/30 [00:06<00:24,  1.00s/it]Refresh arvl bus list ...:  23%|██▎       | 7/30 [00:07<00:23,  1.00s/it]Refresh arvl bus list ...:  27%|██▋       | 8/30 [00:08<00:22,  1.00s/it]Refresh arvl bus list ...:  30%|███       | 9/30 [00:09<00:21,  1.00s/it]Refresh arvl bus list ...:  33%|███▎      | 10/30 [00:10<00:20,  1.00s/it]Refresh arvl bus list ...:  37%|███▋      | 11/30 [00:11<00:19,  1.00s/it]Refresh arvl bus list ...:  40%|████      | 12/30 [00:12<00:18,  1.00s/it]Refresh arvl bus list ...:  43%|████▎     | 13/30 [00:13<00:17,  1.00s/it]Refresh arvl bus list ...:  47%|████▋     | 14/30 [00:14<00:16,  1.00s/it]Refresh arvl bus list ...:  50%|█████     | 15/30 [00:15<00:15,  1.00s/it]Refresh arvl bus list ...:  53%|█████▎    | 16/30 [00:16<00:14,  1.00s/it]Refresh arvl bus list ...:  57%|█████▋    | 17/30 [00:17<00:13,  1.00s/it]Refresh arvl bus list ...:  60%|██████    | 18/30 [00:18<00:12,  1.00s/it]Refresh arvl bus list ...:  63%|██████▎   | 19/30 [00:19<00:11,  1.00s/it]Refresh arvl bus list ...:  67%|██████▋   | 20/30 [00:20<00:10,  1.00s/it]Refresh arvl bus list ...:  70%|███████   | 21/30 [00:21<00:09,  1.00s/it]Refresh arvl bus list ...:  73%|███████▎  | 22/30 [00:22<00:08,  1.00s/it]Refresh arvl bus list ...:  77%|███████▋  | 23/30 [00:23<00:07,  1.00s/it]Refresh arvl bus list ...:  80%|████████  | 24/30 [00:24<00:06,  1.00s/it]Refresh arvl bus list ...:  83%|████████▎ | 25/30 [00:25<00:05,  1.00s/it]Refresh arvl bus list ...:  87%|████████▋ | 26/30 [00:26<00:04,  1.00s/it]Refresh arvl bus list ...:  90%|█████████ | 27/30 [00:27<00:03,  1.00s/it]Refresh arvl bus list ...:  93%|█████████▎| 28/30 [00:28<00:02,  1.00s/it]Refresh arvl bus list ...:  97%|█████████▋| 29/30 [00:29<00:01,  1.00s/it]Refresh arvl bus list ...: 100%|██████████| 30/30 [00:30<00:00,  1.00s/it]Refresh arvl bus list ...: 100%|██████████| 30/30 [00:30<00:00,  1.00s/it]
+----- Getting arvl bus list -----
+[20:33:27.052799] Getting arvl bus list ... (1/4) : 서울병원(47307)
+[20:33:27.246852] station arvl bus API Request sent
+[20:33:27.344002] station arvl bus API data received .
+[20:33:27.344103] >> Get additional bus information . [241426001](1/2)
+[20:33:27.344132] route info API Request sent
+[20:33:27.413715] route info API API data received
+[20:33:27.413795] route order info API Request sent
+[20:33:27.523878] route order info API data received
+[20:33:27.523978] >> Get additional bus information . [241426001](2/2)
+[20:33:27.524007] route info API Request sent
+[20:33:27.607518] route info API API data received
+[20:33:27.607598] route order info API Request sent
+[20:33:27.700994] route order info API data received
+[20:33:27.701149] Got arvl bus list .       (1/4) : 서울병원(47307)
+[20:33:27.701185] Getting arvl bus list ... (2/4) : 서울병원(47574)
+[20:33:27.873508] station arvl bus API Request sent
+[20:33:27.963232] station arvl bus API data received .
+[20:33:27.963344] >> Get additional bus information . [228000021](1/4)
+[20:33:27.963373] route info API Request sent
+[20:33:28.034395] route info API API data received
+[20:33:28.034476] route order info API Request sent
+[20:33:28.115861] route order info API data received
+[20:33:28.115960] >> Get additional bus information . [228000029](2/4)
+[20:33:28.115991] route info API Request sent
+[20:33:28.185726] route info API API data received
+[20:33:28.185807] route order info API Request sent
+[20:33:28.276026] route order info API data received
+[20:33:28.276125] >> Get additional bus information . [228000133](3/4)
+[20:33:28.276154] route info API Request sent
+[20:33:28.869062] route info API API data received
+[20:33:28.869143] route order info API Request sent
+[20:33:28.958481] route order info API data received
+[20:33:28.958584] >> Get additional bus information . [228000136](4/4)
+[20:33:28.958614] route info API Request sent
+[20:33:29.042763] route info API API data received
+[20:33:29.042845] route order info API Request sent
+[20:33:29.657089] route order info API data received
+[20:33:29.657253] Got arvl bus list .       (2/4) : 서울병원(47574)
+[20:33:29.657289] Getting arvl bus list ... (3/4) : 덕영고등학교(56151)
+[20:33:29.825309] station arvl bus API Request sent
+[20:33:29.905502] station arvl bus API data received .
+[20:33:29.905599] >> Get additional bus information . [241426001](1/1)
+[20:33:29.905628] route info API Request sent
+[20:33:29.981939] route info API API data received
+[20:33:29.982018] route order info API Request sent
+[20:33:30.089374] route order info API data received
+[20:33:30.089553] Got arvl bus list .       (3/4) : 덕영고등학교(56151)
+[20:33:30.089586] Getting arvl bus list ... (4/4) : 덕영고등학교(56154)
+[20:33:30.257557] station arvl bus API Request sent
+[20:33:30.348447] station arvl bus API data received .
+[20:33:30.348539] >> Get additional bus information . [241426001](1/1)
+[20:33:30.348567] route info API Request sent
+[20:33:30.446669] route info API API data received
+[20:33:30.446747] route order info API Request sent
+[20:33:30.536648] route order info API data received
+[20:33:30.536794] Got arvl bus list .       (4/4) : 덕영고등학교(56154)
+-------------------------------------
+Refresh arvl bus list ...:   0%|          | 0/30 [00:00<?, ?it/s]Refresh arvl bus list ...:   3%|▎         | 1/30 [00:01<00:29,  1.00s/it]Refresh arvl bus list ...:   7%|▋         | 2/30 [00:02<00:28,  1.00s/it]Refresh arvl bus list ...:  10%|█         | 3/30 [00:03<00:27,  1.00s/it]Refresh arvl bus list ...:  13%|█▎        | 4/30 [00:04<00:26,  1.00s/it]Refresh arvl bus list ...:  17%|█▋        | 5/30 [00:05<00:25,  1.00s/it]Refresh arvl bus list ...:  20%|██        | 6/30 [00:06<00:24,  1.00s/it]Refresh arvl bus list ...:  23%|██▎       | 7/30 [00:07<00:23,  1.00s/it]Refresh arvl bus list ...:  27%|██▋       | 8/30 [00:08<00:22,  1.00s/it]Refresh arvl bus list ...:  30%|███       | 9/30 [00:09<00:21,  1.00s/it]Refresh arvl bus list ...:  33%|███▎      | 10/30 [00:10<00:20,  1.00s/it]Refresh arvl bus list ...:  37%|███▋      | 11/30 [00:11<00:19,  1.00s/it]Refresh arvl bus list ...:  40%|████      | 12/30 [00:12<00:18,  1.00s/it]Refresh arvl bus list ...:  43%|████▎     | 13/30 [00:13<00:17,  1.00s/it]Refresh arvl bus list ...:  47%|████▋     | 14/30 [00:14<00:16,  1.00s/it]Refresh arvl bus list ...:  50%|█████     | 15/30 [00:15<00:15,  1.00s/it]Refresh arvl bus list ...:  53%|█████▎    | 16/30 [00:16<00:14,  1.00s/it]Refresh arvl bus list ...:  57%|█████▋    | 17/30 [00:17<00:13,  1.00s/it]Refresh arvl bus list ...:  60%|██████    | 18/30 [00:18<00:12,  1.00s/it]Refresh arvl bus list ...:  63%|██████▎   | 19/30 [00:19<00:11,  1.00s/it]Refresh arvl bus list ...:  67%|██████▋   | 20/30 [00:20<00:10,  1.00s/it]Refresh arvl bus list ...:  70%|███████   | 21/30 [00:21<00:09,  1.00s/it]Refresh arvl bus list ...:  73%|███████▎  | 22/30 [00:22<00:08,  1.00s/it]Refresh arvl bus list ...:  77%|███████▋  | 23/30 [00:23<00:07,  1.00s/it]Refresh arvl bus list ...:  80%|████████  | 24/30 [00:24<00:06,  1.00s/it]Refresh arvl bus list ...:  83%|████████▎ | 25/30 [00:25<00:05,  1.00s/it]Refresh arvl bus list ...:  87%|████████▋ | 26/30 [00:26<00:04,  1.00s/it]Refresh arvl bus list ...:  90%|█████████ | 27/30 [00:27<00:03,  1.00s/it]Refresh arvl bus list ...:  93%|█████████▎| 28/30 [00:28<00:02,  1.00s/it]Refresh arvl bus list ...:  97%|█████████▋| 29/30 [00:29<00:01,  1.00s/it]Refresh arvl bus list ...: 100%|██████████| 30/30 [00:30<00:00,  1.00s/it]Refresh arvl bus list ...: 100%|██████████| 30/30 [00:30<00:00,  1.00s/it]
+----- Getting arvl bus list -----
+[20:34:00.584153] Getting arvl bus list ... (1/4) : 서울병원(47307)
+[20:34:00.744803] station arvl bus API Request sent
+[20:34:00.831894] station arvl bus API data received .
+[20:34:00.831994] >> Get additional bus information . [241426001](1/2)
+[20:34:00.832023] route info API Request sent
+[20:34:00.899842] route info API API data received
+[20:34:00.899922] route order info API Request sent
+[20:34:00.987748] route order info API data received
+[20:34:00.987848] >> Get additional bus information . [241426001](2/2)
+[20:34:00.987877] route info API Request sent
+[20:34:01.061742] route info API API data received
+[20:34:01.061826] route order info API Request sent
+[20:34:01.146607] route order info API data received
+[20:34:01.146766] Got arvl bus list .       (1/4) : 서울병원(47307)
+[20:34:01.146801] Getting arvl bus list ... (2/4) : 서울병원(47574)
+[20:34:01.351170] station arvl bus API Request sent
+[20:34:01.430458] station arvl bus API data received .
+[20:34:01.430568] >> Get additional bus information . [228000021](1/4)
+[20:34:01.430597] route info API Request sent
+[20:34:01.522648] route info API API data received
+[20:34:01.522727] route order info API Request sent
+[20:34:01.650029] route order info API data received
+[20:34:01.650124] >> Get additional bus information . [228000029](2/4)
+[20:34:01.650155] route info API Request sent
+[20:34:01.729912] route info API API data received
+[20:34:01.729993] route order info API Request sent
+[20:34:01.930165] route order info API data received
+[20:34:01.930263] >> Get additional bus information . [228000133](3/4)
+[20:34:01.930292] route info API Request sent
+[20:34:02.036240] route info API API data received
+[20:34:02.036320] route order info API Request sent
+[20:34:02.175107] route order info API data received
+[20:34:02.175223] >> Get additional bus information . [228000136](4/4)
+[20:34:02.175283] route info API Request sent
+[20:34:02.365504] route info API API data received
+[20:34:02.365585] route order info API Request sent
+[20:34:02.507660] route order info API data received
+[20:34:02.507828] Got arvl bus list .       (2/4) : 서울병원(47574)
+[20:34:02.507865] Getting arvl bus list ... (3/4) : 덕영고등학교(56151)
+[20:34:02.662980] station arvl bus API Request sent
+[20:34:02.723383] station arvl bus API data received .
+[20:34:02.723478] >> Get additional bus information . [241426001](1/1)
+[20:34:02.723508] route info API Request sent
+[20:34:02.798186] route info API API data received
+[20:34:02.798272] route order info API Request sent
+[20:34:02.898025] route order info API data received
+[20:34:02.898170] Got arvl bus list .       (3/4) : 덕영고등학교(56151)
+[20:34:02.898206] Getting arvl bus list ... (4/4) : 덕영고등학교(56154)
+[20:34:03.149776] station arvl bus API Request sent
+[20:34:03.241185] station arvl bus API data received .
+[20:34:03.241281] >> Get additional bus information . [241426001](1/1)
+[20:34:03.241309] route info API Request sent
+[20:34:03.310930] route info API API data received
+[20:34:03.311011] route order info API Request sent
+[20:34:03.431437] route order info API data received
+[20:34:03.431584] Got arvl bus list .       (4/4) : 덕영고등학교(56154)
+-------------------------------------
+Refresh arvl bus list ...:   0%|          | 0/30 [00:00<?, ?it/s]Refresh arvl bus list ...:   3%|▎         | 1/30 [00:01<00:29,  1.00s/it]Refresh arvl bus list ...:   7%|▋         | 2/30 [00:02<00:28,  1.00s/it]Refresh arvl bus list ...:  10%|█         | 3/30 [00:03<00:27,  1.00s/it]Refresh arvl bus list ...:  13%|█▎        | 4/30 [00:04<00:26,  1.00s/it]Refresh arvl bus list ...:  17%|█▋        | 5/30 [00:05<00:25,  1.00s/it]Refresh arvl bus list ...:  20%|██        | 6/30 [00:06<00:24,  1.00s/it]Refresh arvl bus list ...:  23%|██▎       | 7/30 [00:07<00:23,  1.00s/it]Refresh arvl bus list ...:  27%|██▋       | 8/30 [00:08<00:22,  1.00s/it]Refresh arvl bus list ...:  30%|███       | 9/30 [00:09<00:21,  1.00s/it]Refresh arvl bus list ...:  33%|███▎      | 10/30 [00:10<00:20,  1.00s/it]Refresh arvl bus list ...:  37%|███▋      | 11/30 [00:11<00:19,  1.00s/it]Refresh arvl bus list ...:  40%|████      | 12/30 [00:12<00:18,  1.00s/it]Refresh arvl bus list ...:  43%|████▎     | 13/30 [00:13<00:17,  1.00s/it]Refresh arvl bus list ...:  47%|████▋     | 14/30 [00:14<00:16,  1.00s/it]Refresh arvl bus list ...:  50%|█████     | 15/30 [00:15<00:15,  1.00s/it]Refresh arvl bus list ...:  53%|█████▎    | 16/30 [00:16<00:14,  1.00s/it]Refresh arvl bus list ...:  57%|█████▋    | 17/30 [00:17<00:13,  1.00s/it]Refresh arvl bus list ...:  60%|██████    | 18/30 [00:18<00:12,  1.00s/it]Refresh arvl bus list ...:  63%|██████▎   | 19/30 [00:19<00:11,  1.00s/it]Refresh arvl bus list ...:  67%|██████▋   | 20/30 [00:20<00:10,  1.00s/it]Refresh arvl bus list ...:  70%|███████   | 21/30 [00:21<00:09,  1.00s/it]Refresh arvl bus list ...:  73%|███████▎  | 22/30 [00:22<00:08,  1.00s/it]Refresh arvl bus list ...:  77%|███████▋  | 23/30 [00:23<00:07,  1.00s/it]Refresh arvl bus list ...:  80%|████████  | 24/30 [00:24<00:06,  1.00s/it]Refresh arvl bus list ...:  83%|████████▎ | 25/30 [00:25<00:05,  1.00s/it]Refresh arvl bus list ...:  87%|████████▋ | 26/30 [00:26<00:04,  1.00s/it]Refresh arvl bus list ...:  90%|█████████ | 27/30 [00:27<00:03,  1.00s/it]Refresh arvl bus list ...:  93%|█████████▎| 28/30 [00:28<00:02,  1.00s/it]Refresh arvl bus list ...:  97%|█████████▋| 29/30 [00:29<00:01,  1.00s/it]Refresh arvl bus list ...: 100%|██████████| 30/30 [00:30<00:00,  1.00s/it]Refresh arvl bus list ...: 100%|██████████| 30/30 [00:30<00:00,  1.00s/it]
+----- Getting arvl bus list -----
+[20:34:33.481897] Getting arvl bus list ... (1/4) : 서울병원(47307)
+[20:34:33.694731] station arvl bus API Request sent
+[20:34:33.765696] station arvl bus API data received .
+[20:34:33.765797] >> Get additional bus information . [241426001](1/2)
+[20:34:33.765825] route info API Request sent
+[20:34:33.864317] route info API API data received
+[20:34:33.864399] route order info API Request sent
+[20:34:33.964085] route order info API data received
+[20:34:33.964186] >> Get additional bus information . [241426001](2/2)
+[20:34:33.964215] route info API Request sent
+[20:34:34.040994] route info API API data received
+[20:34:34.041076] route order info API Request sent
+[20:34:34.120030] route order info API data received
+[20:34:34.120186] Got arvl bus list .       (1/4) : 서울병원(47307)
+[20:34:34.120221] Getting arvl bus list ... (2/4) : 서울병원(47574)
+[20:34:34.285552] station arvl bus API Request sent
+[20:34:34.413132] station arvl bus API data received .
+[20:34:34.413240] >> Get additional bus information . [228000021](1/4)
+[20:34:34.413269] route info API Request sent
+[20:34:34.532748] route info API API data received
+[20:34:34.532826] route order info API Request sent
+[20:34:34.633318] route order info API data received
+[20:34:34.633441] >> Get additional bus information . [228000029](2/4)
+[20:34:34.633475] route info API Request sent
+[20:34:34.710143] route info API API data received
+[20:34:34.710223] route order info API Request sent
+[20:34:34.825107] route order info API data received
+[20:34:34.825207] >> Get additional bus information . [228000133](3/4)
+[20:34:34.825238] route info API Request sent
+[20:34:34.896173] route info API API data received
+[20:34:34.896252] route order info API Request sent
+[20:34:35.000763] route order info API data received
+[20:34:35.000865] >> Get additional bus information . [228000136](4/4)
+[20:34:35.000896] route info API Request sent
+[20:34:35.077010] route info API API data received
+[20:34:35.077093] route order info API Request sent
+[20:34:35.191622] route order info API data received
+[20:34:35.191791] Got arvl bus list .       (2/4) : 서울병원(47574)
+[20:34:35.191826] Getting arvl bus list ... (3/4) : 덕영고등학교(56151)
+[20:34:35.383482] station arvl bus API Request sent
+[20:34:35.467247] station arvl bus API data received .
+[20:34:35.467342] >> Get additional bus information . [241426001](1/1)
+[20:34:35.467371] route info API Request sent
+[20:34:35.520029] route info API API data received
+[20:34:35.520112] route order info API Request sent
+[20:34:35.652958] route order info API data received
+[20:34:35.653111] Got arvl bus list .       (3/4) : 덕영고등학교(56151)
+[20:34:35.653145] Getting arvl bus list ... (4/4) : 덕영고등학교(56154)
+[20:34:36.158782] station arvl bus API Request sent
+[20:34:36.235857] station arvl bus API data received .
+[20:34:36.235957] >> Get additional bus information . [241426001](1/1)
+[20:34:36.235986] route info API Request sent
+[20:34:36.305223] route info API API data received
+[20:34:36.305303] route order info API Request sent
+[20:34:36.406054] route order info API data received
+[20:34:36.406204] Got arvl bus list .       (4/4) : 덕영고등학교(56154)
+-------------------------------------
+Refresh arvl bus list ...:   0%|          | 0/30 [00:00<?, ?it/s]Refresh arvl bus list ...:   3%|▎         | 1/30 [00:01<00:29,  1.00s/it]Refresh arvl bus list ...:   7%|▋         | 2/30 [00:02<00:28,  1.00s/it]Refresh arvl bus list ...:  10%|█         | 3/30 [00:03<00:27,  1.00s/it]Refresh arvl bus list ...:  13%|█▎        | 4/30 [00:04<00:26,  1.00s/it]Refresh arvl bus list ...:  17%|█▋        | 5/30 [00:05<00:25,  1.00s/it]Refresh arvl bus list ...:  20%|██        | 6/30 [00:06<00:24,  1.00s/it]Refresh arvl bus list ...:  23%|██▎       | 7/30 [00:07<00:23,  1.00s/it]Refresh arvl bus list ...:  27%|██▋       | 8/30 [00:08<00:22,  1.00s/it]Refresh arvl bus list ...:  30%|███       | 9/30 [00:09<00:21,  1.00s/it]Refresh arvl bus list ...:  33%|███▎      | 10/30 [00:10<00:20,  1.00s/it]Refresh arvl bus list ...:  37%|███▋      | 11/30 [00:11<00:19,  1.00s/it]Refresh arvl bus list ...:  40%|████      | 12/30 [00:12<00:18,  1.00s/it]Refresh arvl bus list ...:  43%|████▎     | 13/30 [00:13<00:17,  1.00s/it]Refresh arvl bus list ...:  47%|████▋     | 14/30 [00:14<00:16,  1.00s/it]Refresh arvl bus list ...:  50%|█████     | 15/30 [00:15<00:15,  1.00s/it]Refresh arvl bus list ...:  53%|█████▎    | 16/30 [00:16<00:14,  1.00s/it]Refresh arvl bus list ...:  57%|█████▋    | 17/30 [00:17<00:13,  1.00s/it]Refresh arvl bus list ...:  60%|██████    | 18/30 [00:18<00:12,  1.00s/it]Refresh arvl bus list ...:  63%|██████▎   | 19/30 [00:19<00:11,  1.00s/it]Refresh arvl bus list ...:  67%|██████▋   | 20/30 [00:20<00:10,  1.00s/it]Refresh arvl bus list ...:  70%|███████   | 21/30 [00:21<00:09,  1.00s/it]Refresh arvl bus list ...:  73%|███████▎  | 22/30 [00:22<00:08,  1.00s/it]Refresh arvl bus list ...:  77%|███████▋  | 23/30 [00:23<00:07,  1.00s/it]Refresh arvl bus list ...:  80%|████████  | 24/30 [00:24<00:06,  1.00s/it]Refresh arvl bus list ...:  83%|████████▎ | 25/30 [00:25<00:05,  1.00s/it]Refresh arvl bus list ...:  87%|████████▋ | 26/30 [00:26<00:04,  1.00s/it]Refresh arvl bus list ...:  90%|█████████ | 27/30 [00:27<00:03,  1.00s/it]Refresh arvl bus list ...:  93%|█████████▎| 28/30 [00:28<00:02,  1.00s/it]Refresh arvl bus list ...:  97%|█████████▋| 29/30 [00:29<00:01,  1.00s/it]Refresh arvl bus list ...: 100%|██████████| 30/30 [00:30<00:00,  1.00s/it]Refresh arvl bus list ...: 100%|██████████| 30/30 [00:30<00:00,  1.00s/it]
+----- Getting arvl bus list -----
+[20:35:06.442786] Getting arvl bus list ... (1/4) : 서울병원(47307)
+[20:35:06.608025] station arvl bus API Request sent
+[20:35:06.697700] station arvl bus API data received .
+[20:35:06.697803] >> Get additional bus information . [241426001](1/2)
+[20:35:06.697833] route info API Request sent
+[20:35:06.770708] route info API API data received
+[20:35:06.770790] route order info API Request sent
+[20:35:06.851509] route order info API data received
+[20:35:06.851616] >> Get additional bus information . [241426001](2/2)
+[20:35:06.851645] route info API Request sent
+[20:35:06.945211] route info API API data received
+[20:35:06.945293] route order info API Request sent
+[20:35:07.026909] route order info API data received
+[20:35:07.027071] Got arvl bus list .       (1/4) : 서울병원(47307)
+[20:35:07.027106] Getting arvl bus list ... (2/4) : 서울병원(47574)
+[20:35:07.193101] station arvl bus API Request sent
+[20:35:07.282867] station arvl bus API data received .
+[20:35:07.282979] >> Get additional bus information . [228000021](1/4)
+[20:35:07.283008] route info API Request sent
+[20:35:07.355490] route info API API data received
+[20:35:07.355571] route order info API Request sent
+[20:35:07.448171] route order info API data received
+[20:35:07.448266] >> Get additional bus information . [228000029](2/4)
+[20:35:07.448298] route info API Request sent
+[20:35:07.518839] route info API API data received
+[20:35:07.518918] route order info API Request sent
+[20:35:07.740239] route order info API data received
+[20:35:07.740343] >> Get additional bus information . [228000133](3/4)
+[20:35:07.740372] route info API Request sent
+[20:35:07.835966] route info API API data received
+[20:35:07.836046] route order info API Request sent
+[20:35:07.915416] route order info API data received
+[20:35:07.915519] >> Get additional bus information . [228000136](4/4)
+[20:35:07.915550] route info API Request sent
+[20:35:08.069700] route info API API data received
+[20:35:08.069781] route order info API Request sent
+[20:35:08.176803] route order info API data received
+[20:35:08.176975] Got arvl bus list .       (2/4) : 서울병원(47574)
+[20:35:08.177011] Getting arvl bus list ... (3/4) : 덕영고등학교(56151)
+[20:35:08.351151] station arvl bus API Request sent
+[20:35:08.413507] station arvl bus API data received .
+[20:35:08.413606] >> Get additional bus information . [241426001](1/1)
+[20:35:08.413635] route info API Request sent
+[20:35:08.505925] route info API API data received
+[20:35:08.506007] route order info API Request sent
+[20:35:08.622109] route order info API data received
+[20:35:08.622259] Got arvl bus list .       (3/4) : 덕영고등학교(56151)
+[20:35:08.622293] Getting arvl bus list ... (4/4) : 덕영고등학교(56154)
+[20:35:08.778778] station arvl bus API Request sent
+[20:35:08.859252] station arvl bus API data received .
+[20:35:08.859351] >> Get additional bus information . [241426001](1/1)
+[20:35:08.859381] route info API Request sent
+[20:35:08.921259] route info API API data received
+[20:35:08.921338] route order info API Request sent
+[20:35:09.043866] route order info API data received
+[20:35:09.044019] Got arvl bus list .       (4/4) : 덕영고등학교(56154)
+-------------------------------------
+Refresh arvl bus list ...:   0%|          | 0/30 [00:00<?, ?it/s]Refresh arvl bus list ...:   3%|▎         | 1/30 [00:01<00:29,  1.00s/it]Refresh arvl bus list ...:   7%|▋         | 2/30 [00:02<00:28,  1.00s/it]Refresh arvl bus list ...:  10%|█         | 3/30 [00:03<00:27,  1.00s/it]Refresh arvl bus list ...:  13%|█▎        | 4/30 [00:04<00:26,  1.00s/it]Refresh arvl bus list ...:  17%|█▋        | 5/30 [00:05<00:25,  1.00s/it]Refresh arvl bus list ...:  20%|██        | 6/30 [00:06<00:24,  1.00s/it]Refresh arvl bus list ...:  23%|██▎       | 7/30 [00:07<00:23,  1.00s/it]Refresh arvl bus list ...:  27%|██▋       | 8/30 [00:08<00:22,  1.00s/it]Refresh arvl bus list ...:  30%|███       | 9/30 [00:09<00:21,  1.00s/it]Refresh arvl bus list ...:  33%|███▎      | 10/30 [00:10<00:20,  1.00s/it]Refresh arvl bus list ...:  37%|███▋      | 11/30 [00:11<00:19,  1.00s/it]Refresh arvl bus list ...:  40%|████      | 12/30 [00:12<00:18,  1.00s/it]Refresh arvl bus list ...:  43%|████▎     | 13/30 [00:13<00:17,  1.00s/it]Refresh arvl bus list ...:  47%|████▋     | 14/30 [00:14<00:16,  1.00s/it]Refresh arvl bus list ...:  50%|█████     | 15/30 [00:15<00:15,  1.00s/it]Refresh arvl bus list ...:  53%|█████▎    | 16/30 [00:16<00:14,  1.00s/it]Refresh arvl bus list ...:  57%|█████▋    | 17/30 [00:17<00:13,  1.00s/it]Refresh arvl bus list ...:  60%|██████    | 18/30 [00:18<00:12,  1.00s/it]Refresh arvl bus list ...:  63%|██████▎   | 19/30 [00:19<00:11,  1.00s/it]Refresh arvl bus list ...:  67%|██████▋   | 20/30 [00:20<00:10,  1.00s/it]Refresh arvl bus list ...:  70%|███████   | 21/30 [00:21<00:09,  1.00s/it]Refresh arvl bus list ...:  73%|███████▎  | 22/30 [00:22<00:08,  1.00s/it]Refresh arvl bus list ...:  77%|███████▋  | 23/30 [00:23<00:07,  1.00s/it]Refresh arvl bus list ...:  80%|████████  | 24/30 [00:24<00:06,  1.00s/it]Refresh arvl bus list ...:  83%|████████▎ | 25/30 [00:25<00:05,  1.00s/it]Refresh arvl bus list ...:  87%|████████▋ | 26/30 [00:26<00:04,  1.00s/it]Refresh arvl bus list ...:  90%|█████████ | 27/30 [00:27<00:03,  1.00s/it]Refresh arvl bus list ...:  93%|█████████▎| 28/30 [00:28<00:02,  1.00s/it]Refresh arvl bus list ...:  97%|█████████▋| 29/30 [00:29<00:01,  1.00s/it]Refresh arvl bus list ...: 100%|██████████| 30/30 [00:30<00:00,  1.00s/it]Refresh arvl bus list ...: 100%|██████████| 30/30 [00:30<00:00,  1.00s/it]
+----- Getting arvl bus list -----
+[20:35:39.084023] Getting arvl bus list ... (1/4) : 서울병원(47307)
+[20:35:39.790818] station arvl bus API Request sent
+[20:35:40.357829] station arvl bus API data received .
+[20:35:40.357959] >> Get additional bus information . [241426001](1/2)
+[20:35:40.357989] route info API Request sent
+[20:35:40.817039] route info API API data received
+[20:35:40.817170] route order info API Request sent
+[20:35:41.357875] route order info API data received
+[20:35:41.357985] >> Get additional bus information . [241426001](2/2)
+[20:35:41.358014] route info API Request sent
+[20:35:42.150162] route info API API data received
+[20:35:42.150243] route order info API Request sent
+[20:35:42.723233] route order info API data received
+[20:35:42.723392] Got arvl bus list .       (1/4) : 서울병원(47307)
+[20:35:42.723429] Getting arvl bus list ... (2/4) : 서울병원(47574)
+[20:35:43.840222] station arvl bus API Request sent
+[20:35:44.465715] station arvl bus API data received .
+[20:35:44.465828] >> Get additional bus information . [228000021](1/4)
+[20:35:44.465858] route info API Request sent
+[20:35:44.549954] route info API API data received
+[20:35:44.550050] route order info API Request sent
+[20:35:44.655358] route order info API data received
+[20:35:44.655470] >> Get additional bus information . [228000029](2/4)
+[20:35:44.655504] route info API Request sent
+[20:35:44.719901] route info API API data received
+[20:35:44.720001] route order info API Request sent
+[20:35:44.866884] route order info API data received
+[20:35:44.867011] >> Get additional bus information . [228000133](3/4)
+[20:35:44.867043] route info API Request sent
+[20:35:44.945774] route info API API data received
+[20:35:44.945861] route order info API Request sent
+[20:35:45.083818] route order info API data received
+[20:35:45.083936] >> Get additional bus information . [228000136](4/4)
+[20:35:45.083969] route info API Request sent
+[20:35:45.150444] route info API API data received
+[20:35:45.150532] route order info API Request sent
+[20:35:45.267871] route order info API data received
+[20:35:45.268081] Got arvl bus list .       (2/4) : 서울병원(47574)
+[20:35:45.268122] Getting arvl bus list ... (3/4) : 덕영고등학교(56151)
+[20:35:45.423654] station arvl bus API Request sent
+[20:35:45.478738] station arvl bus API data received .
+[20:35:45.478842] >> Get additional bus information . [241426001](1/1)
+[20:35:45.478870] route info API Request sent
+[20:35:45.561694] route info API API data received
+[20:35:45.561779] route order info API Request sent
+[20:35:45.679063] route order info API data received
+[20:35:45.679233] Got arvl bus list .       (3/4) : 덕영고등학교(56151)
+[20:35:45.679269] Getting arvl bus list ... (4/4) : 덕영고등학교(56154)
+[20:35:45.839909] station arvl bus API Request sent
+[20:35:45.926526] station arvl bus API data received .
+[20:35:45.926770] >> Get additional bus information . [241426001](1/1)
+[20:35:45.926804] route info API Request sent
+[20:35:46.015349] route info API API data received
+[20:35:46.015436] route order info API Request sent
+[20:35:46.107563] route order info API data received
+[20:35:46.107706] Got arvl bus list .       (4/4) : 덕영고등학교(56154)
+-------------------------------------
+Refresh arvl bus list ...:   0%|          | 0/30 [00:00<?, ?it/s]Refresh arvl bus list ...:   3%|▎         | 1/30 [00:01<00:29,  1.00s/it]Refresh arvl bus list ...:   7%|▋         | 2/30 [00:02<00:28,  1.00s/it]Refresh arvl bus list ...:  10%|█         | 3/30 [00:07<01:17,  2.85s/it]Refresh arvl bus list ...:  13%|█▎        | 4/30 [00:08<00:55,  2.12s/it]Refresh arvl bus list ...:  17%|█▋        | 5/30 [00:09<00:42,  1.72s/it]Refresh arvl bus list ...:  20%|██        | 6/30 [00:10<00:35,  1.48s/it]Refresh arvl bus list ...:  23%|██▎       | 7/30 [00:11<00:30,  1.32s/it]Refresh arvl bus list ...:  27%|██▋       | 8/30 [00:12<00:26,  1.22s/it]Refresh arvl bus list ...:  30%|███       | 9/30 [00:13<00:24,  1.15s/it]Refresh arvl bus list ...:  33%|███▎      | 10/30 [00:14<00:22,  1.11s/it]Refresh arvl bus list ...:  37%|███▋      | 11/30 [00:15<00:20,  1.07s/it]Refresh arvl bus list ...:  40%|████      | 12/30 [00:16<00:18,  1.05s/it]Refresh arvl bus list ...:  43%|████▎     | 13/30 [00:17<00:17,  1.04s/it]Refresh arvl bus list ...:  47%|████▋     | 14/30 [00:18<00:16,  1.03s/it]Refresh arvl bus list ...:  50%|█████     | 15/30 [00:19<00:16,  1.10s/it]Refresh arvl bus list ...:  53%|█████▎    | 16/30 [00:20<00:15,  1.07s/it]Refresh arvl bus list ...:  57%|█████▋    | 17/30 [00:21<00:13,  1.05s/it]Refresh arvl bus list ...:  60%|██████    | 18/30 [00:22<00:12,  1.04s/it]Refresh arvl bus list ...:  63%|██████▎   | 19/30 [00:23<00:11,  1.03s/it]Refresh arvl bus list ...:  67%|██████▋   | 20/30 [00:24<00:10,  1.02s/it]Refresh arvl bus list ...:  70%|███████   | 21/30 [00:25<00:09,  1.01s/it]Refresh arvl bus list ...:  73%|███████▎  | 22/30 [00:26<00:08,  1.01s/it]Refresh arvl bus list ...:  77%|███████▋  | 23/30 [00:27<00:07,  1.01s/it]Refresh arvl bus list ...:  80%|████████  | 24/30 [00:28<00:06,  1.01s/it]Refresh arvl bus list ...:  83%|████████▎ | 25/30 [00:29<00:05,  1.01s/it]Refresh arvl bus list ...:  87%|████████▋ | 26/30 [00:30<00:04,  1.01s/it]Refresh arvl bus list ...:  90%|█████████ | 27/30 [00:31<00:03,  1.00s/it]Refresh arvl bus list ...:  93%|█████████▎| 28/30 [00:32<00:02,  1.00s/it]Refresh arvl bus list ...:  97%|█████████▋| 29/30 [00:33<00:01,  1.00s/it]Refresh arvl bus list ...: 100%|██████████| 30/30 [00:34<00:00,  1.00s/it]Refresh arvl bus list ...: 100%|██████████| 30/30 [00:34<00:00,  1.15s/it]
+----- Getting arvl bus list -----
+[20:36:23.992989] Getting arvl bus list ... (1/4) : 서울병원(47307)
+[20:36:24.191744] station arvl bus API Request sent
+[20:36:24.294052] station arvl bus API data received .
+[20:36:24.294198] >> Get additional bus information . [241426001](1/2)
+[20:36:24.294238] route info API Request sent
+[20:36:24.389139] route info API API data received
+[20:36:24.389227] route order info API Request sent
+[20:36:24.539378] route order info API data received
+[20:36:24.539651] >> Get additional bus information . [241426001](2/2)
+[20:36:24.539716] route info API Request sent
+[20:36:24.606243] route info API API data received
+[20:36:24.606340] route order info API Request sent
+[20:36:24.726910] route order info API data received
+[20:36:24.727104] Got arvl bus list .       (1/4) : 서울병원(47307)
+[20:36:24.727161] Getting arvl bus list ... (2/4) : 서울병원(47574)
+[20:36:24.898255] station arvl bus API Request sent
+[20:36:24.989105] station arvl bus API data received .
+[20:36:24.989233] >> Get additional bus information . [228000021](1/4)
+[20:36:24.989263] route info API Request sent
+[20:36:25.082362] route info API API data received
+[20:36:25.082459] route order info API Request sent
+[20:36:25.183556] route order info API data received
+[20:36:25.183669] >> Get additional bus information . [228000029](2/4)
+[20:36:25.183706] route info API Request sent
+[20:36:25.243893] route info API API data received
+[20:36:25.243994] route order info API Request sent
+[20:36:25.321946] route order info API data received
+[20:36:25.322104] >> Get additional bus information . [228000133](3/4)
+[20:36:25.322144] route info API Request sent
+[20:36:25.377092] route info API API data received
+[20:36:25.377230] route order info API Request sent
+[20:36:25.501118] route order info API data received
+[20:36:25.501256] >> Get additional bus information . [228000136](4/4)
+[20:36:25.501292] route info API Request sent
+[20:36:25.579036] route info API API data received
+[20:36:25.579135] route order info API Request sent
+[20:36:25.695771] route order info API data received
+[20:36:25.696006] Got arvl bus list .       (2/4) : 서울병원(47574)
+[20:36:25.696056] Getting arvl bus list ... (3/4) : 덕영고등학교(56151)
+[20:36:25.880497] station arvl bus API Request sent
+[20:36:25.952317] station arvl bus API data received .
+[20:36:25.952449] >> Get additional bus information . [241426001](1/1)
+[20:36:25.952487] route info API Request sent
+[20:36:26.022586] route info API API data received
+[20:36:26.022690] route order info API Request sent
+[20:36:26.130835] route order info API data received
+[20:36:26.131206] Got arvl bus list .       (3/4) : 덕영고등학교(56151)
+[20:36:26.131281] Getting arvl bus list ... (4/4) : 덕영고등학교(56154)
+[20:36:26.296552] station arvl bus API Request sent
+[20:36:26.380439] station arvl bus API data received .
+[20:36:26.380610] >> Get additional bus information . [241426001](1/1)
+[20:36:26.380654] route info API Request sent
+[20:36:26.462539] route info API API data received
+[20:36:26.462635] route order info API Request sent
+[20:36:26.589106] route order info API data received
+[20:36:26.589309] Got arvl bus list .       (4/4) : 덕영고등학교(56154)
+-------------------------------------
+Refresh arvl bus list ...:   0%|          | 0/30 [00:00<?, ?it/s]Refresh arvl bus list ...:   3%|▎         | 1/30 [00:01<00:29,  1.00s/it]Refresh arvl bus list ...:   7%|▋         | 2/30 [00:02<00:28,  1.00s/it]Refresh arvl bus list ...:  10%|█         | 3/30 [00:03<00:27,  1.00s/it]Refresh arvl bus list ...:  13%|█▎        | 4/30 [00:04<00:26,  1.00s/it]Refresh arvl bus list ...:  17%|█▋        | 5/30 [00:05<00:25,  1.00s/it]Refresh arvl bus list ...:  20%|██        | 6/30 [00:06<00:24,  1.00s/it]Refresh arvl bus list ...:  23%|██▎       | 7/30 [00:07<00:23,  1.00s/it]Refresh arvl bus list ...:  27%|██▋       | 8/30 [00:08<00:22,  1.00s/it]Refresh arvl bus list ...:  30%|███       | 9/30 [00:09<00:21,  1.00s/it]Refresh arvl bus list ...:  33%|███▎      | 10/30 [00:10<00:20,  1.00s/it]Refresh arvl bus list ...:  37%|███▋      | 11/30 [00:11<00:19,  1.00s/it]Refresh arvl bus list ...:  40%|████      | 12/30 [00:12<00:18,  1.00s/it]Refresh arvl bus list ...:  43%|████▎     | 13/30 [00:13<00:17,  1.00s/it]Refresh arvl bus list ...:  47%|████▋     | 14/30 [00:14<00:16,  1.00s/it]Refresh arvl bus list ...:  50%|█████     | 15/30 [00:15<00:16,  1.12s/it]Refresh arvl bus list ...:  53%|█████▎    | 16/30 [00:16<00:15,  1.09s/it]Refresh arvl bus list ...:  57%|█████▋    | 17/30 [00:17<00:14,  1.08s/it]Refresh arvl bus list ...:  60%|██████    | 18/30 [00:18<00:13,  1.16s/it]Refresh arvl bus list ...:  63%|██████▎   | 19/30 [00:21<00:14,  1.29s/it]Refresh arvl bus list ...:  67%|██████▋   | 20/30 [00:22<00:15,  1.60s/it]Refresh arvl bus list ...:  70%|███████   | 21/30 [00:23<00:12,  1.42s/it]Refresh arvl bus list ...:  73%|███████▎  | 22/30 [00:24<00:10,  1.29s/it]Refresh arvl bus list ...:  77%|███████▋  | 23/30 [00:25<00:08,  1.21s/it]Refresh arvl bus list ...:  80%|████████  | 24/30 [00:26<00:07,  1.18s/it]Refresh arvl bus list ...:  83%|████████▎ | 25/30 [00:27<00:05,  1.16s/it]Refresh arvl bus list ...:  87%|████████▋ | 26/30 [00:29<00:04,  1.12s/it]Refresh arvl bus list ...:  90%|█████████ | 27/30 [00:31<00:04,  1.34s/it]Refresh arvl bus list ...:  93%|█████████▎| 28/30 [00:32<00:02,  1.33s/it]Refresh arvl bus list ...:  97%|█████████▋| 29/30 [00:33<00:01,  1.23s/it]Refresh arvl bus list ...: 100%|██████████| 30/30 [00:34<00:00,  1.16s/it]Refresh arvl bus list ...: 100%|██████████| 30/30 [00:34<00:00,  1.14s/it]
+----- Getting arvl bus list -----
+[20:37:00.776708] Getting arvl bus list ... (1/4) : 서울병원(47307)
+[20:37:00.956877] station arvl bus API Request sent
+[20:37:01.036860] station arvl bus API data received .
+[20:37:01.036968] >> Get additional bus information . [241426001](1/2)
+[20:37:01.036999] route info API Request sent
+[20:37:01.148138] route info API API data received
+[20:37:01.148218] route order info API Request sent
+[20:37:01.235287] route order info API data received
+[20:37:01.235393] >> Get additional bus information . [241426001](2/2)
+[20:37:01.235422] route info API Request sent
+[20:37:01.317438] route info API API data received
+[20:37:01.317521] route order info API Request sent
+[20:37:01.469236] route order info API data received
+[20:37:01.469433] Got arvl bus list .       (1/4) : 서울병원(47307)
+[20:37:01.469471] Getting arvl bus list ... (2/4) : 서울병원(47574)
+[20:37:01.674200] station arvl bus API Request sent
+[20:37:01.759178] station arvl bus API data received .
+[20:37:01.759287] >> Get additional bus information . [228000021](1/4)
+[20:37:01.759315] route info API Request sent
+[20:37:01.864463] route info API API data received
+[20:37:01.864543] route order info API Request sent
+[20:37:01.991650] route order info API data received
+[20:37:01.991750] >> Get additional bus information . [228000029](2/4)
+[20:37:01.991782] route info API Request sent
+[20:37:02.107486] route info API API data received
+[20:37:02.107567] route order info API Request sent
+[20:37:02.196846] route order info API data received
+[20:37:02.196947] >> Get additional bus information . [228000133](3/4)
+[20:37:02.196976] route info API Request sent
+[20:37:02.304198] route info API API data received
+[20:37:02.304276] route order info API Request sent
+[20:37:02.396047] route order info API data received
+[20:37:02.396152] >> Get additional bus information . [228000136](4/4)
+[20:37:02.396182] route info API Request sent
+[20:37:02.499030] route info API API data received
+[20:37:02.499111] route order info API Request sent
+[20:37:02.606210] route order info API data received
+[20:37:02.606381] Got arvl bus list .       (2/4) : 서울병원(47574)
+[20:37:02.606417] Getting arvl bus list ... (3/4) : 덕영고등학교(56151)
+[20:37:02.751456] station arvl bus API Request sent
+[20:37:02.843494] station arvl bus API data received .
+[20:37:02.843589] >> Get additional bus information . [241426001](1/1)
+[20:37:02.843617] route info API Request sent
+[20:37:02.929920] route info API API data received
+[20:37:02.930000] route order info API Request sent
+[20:37:03.061458] route order info API data received
+[20:37:03.061620] Got arvl bus list .       (3/4) : 덕영고등학교(56151)
+[20:37:03.061655] Getting arvl bus list ... (4/4) : 덕영고등학교(56154)
+[20:37:03.210452] station arvl bus API Request sent
+[20:37:03.299197] station arvl bus API data received .
+[20:37:03.299295] >> Get additional bus information . [241426001](1/1)
+[20:37:03.299323] route info API Request sent
+[20:37:03.358572] route info API API data received
+[20:37:03.358653] route order info API Request sent
+[20:37:03.439078] route order info API data received
+[20:37:03.439225] Got arvl bus list .       (4/4) : 덕영고등학교(56154)
+-------------------------------------
+Refresh arvl bus list ...:   0%|          | 0/30 [00:00<?, ?it/s]Refresh arvl bus list ...:   3%|▎         | 1/30 [00:01<00:29,  1.00s/it]Refresh arvl bus list ...:   7%|▋         | 2/30 [00:02<00:28,  1.00s/it]Refresh arvl bus list ...:  10%|█         | 3/30 [00:03<00:27,  1.00s/it]Refresh arvl bus list ...:  13%|█▎        | 4/30 [00:04<00:26,  1.00s/it]Refresh arvl bus list ...:  17%|█▋        | 5/30 [00:05<00:25,  1.00s/it]Refresh arvl bus list ...:  20%|██        | 6/30 [00:06<00:24,  1.00s/it]Refresh arvl bus list ...:  23%|██▎       | 7/30 [00:07<00:23,  1.00s/it]Refresh arvl bus list ...:  27%|██▋       | 8/30 [00:08<00:22,  1.00s/it]Refresh arvl bus list ...:  30%|███       | 9/30 [00:09<00:21,  1.00s/it]Refresh arvl bus list ...:  33%|███▎      | 10/30 [00:10<00:20,  1.00s/it]Refresh arvl bus list ...:  37%|███▋      | 11/30 [00:11<00:19,  1.00s/it]Refresh arvl bus list ...:  40%|████      | 12/30 [00:12<00:18,  1.00s/it]Refresh arvl bus list ...:  43%|████▎     | 13/30 [00:13<00:17,  1.00s/it]Refresh arvl bus list ...:  47%|████▋     | 14/30 [00:14<00:16,  1.00s/it]Refresh arvl bus list ...:  50%|█████     | 15/30 [00:15<00:15,  1.00s/it]Refresh arvl bus list ...:  53%|█████▎    | 16/30 [00:16<00:14,  1.00s/it]Refresh arvl bus list ...:  57%|█████▋    | 17/30 [00:17<00:13,  1.00s/it]Refresh arvl bus list ...:  60%|██████    | 18/30 [00:18<00:12,  1.00s/it]Refresh arvl bus list ...:  63%|██████▎   | 19/30 [00:19<00:11,  1.00s/it]Refresh arvl bus list ...:  67%|██████▋   | 20/30 [00:20<00:10,  1.00s/it]Refresh arvl bus list ...:  70%|███████   | 21/30 [00:21<00:09,  1.00s/it]Refresh arvl bus list ...:  73%|███████▎  | 22/30 [00:22<00:08,  1.00s/it]Refresh arvl bus list ...:  77%|███████▋  | 23/30 [00:23<00:07,  1.00s/it]Refresh arvl bus list ...:  80%|████████  | 24/30 [00:24<00:06,  1.00s/it]Refresh arvl bus list ...:  83%|████████▎ | 25/30 [00:25<00:05,  1.00s/it]Refresh arvl bus list ...:  87%|████████▋ | 26/30 [00:26<00:04,  1.00s/it]Refresh arvl bus list ...:  90%|█████████ | 27/30 [00:27<00:03,  1.00s/it]Refresh arvl bus list ...:  93%|█████████▎| 28/30 [00:28<00:02,  1.00s/it]Refresh arvl bus list ...:  97%|█████████▋| 29/30 [00:29<00:01,  1.00s/it]Refresh arvl bus list ...: 100%|██████████| 30/30 [00:30<00:00,  1.00s/it]Refresh arvl bus list ...: 100%|██████████| 30/30 [00:30<00:00,  1.00s/it]
+----- Getting arvl bus list -----
+[20:37:33.469076] Getting arvl bus list ... (1/4) : 서울병원(47307)
+[20:37:33.677171] station arvl bus API Request sent
+[20:37:33.765992] station arvl bus API data received .
+[20:37:33.766097] >> Get additional bus information . [241426001](1/2)
+[20:37:33.766127] route info API Request sent
+[20:37:33.848176] route info API API data received
+[20:37:33.848256] route order info API Request sent
+[20:37:33.967788] route order info API data received
+[20:37:33.967900] >> Get additional bus information . [241426001](2/2)
+[20:37:33.967930] route info API Request sent
+[20:37:34.045340] route info API API data received
+[20:37:34.045461] route order info API Request sent
+[20:37:34.147678] route order info API data received
+[20:37:34.147844] Got arvl bus list .       (1/4) : 서울병원(47307)
+[20:37:34.147882] Getting arvl bus list ... (2/4) : 서울병원(47574)
+[20:37:34.305097] station arvl bus API Request sent
+[20:37:34.416652] station arvl bus API data received .
+[20:37:34.416799] >> Get additional bus information . [228000021](1/4)
+[20:37:34.416835] route info API Request sent
+[20:37:34.476489] route info API API data received
+[20:37:34.476570] route order info API Request sent
+[20:37:34.574668] route order info API data received
+[20:37:34.574771] >> Get additional bus information . [228000029](2/4)
+[20:37:34.574805] route info API Request sent
+[20:37:34.670422] route info API API data received
+[20:37:34.670504] route order info API Request sent
+[20:37:34.748359] route order info API data received
+[20:37:34.748463] >> Get additional bus information . [228000133](3/4)
+[20:37:34.748492] route info API Request sent
+[20:37:34.821011] route info API API data received
+[20:37:34.821092] route order info API Request sent
+[20:37:34.931405] route order info API data received
+[20:37:34.931510] >> Get additional bus information . [228000136](4/4)
+[20:37:34.931540] route info API Request sent
+[20:37:34.987356] route info API API data received
+[20:37:34.987441] route order info API Request sent
+[20:37:35.103433] route order info API data received
+[20:37:35.103610] Got arvl bus list .       (2/4) : 서울병원(47574)
+[20:37:35.103646] Getting arvl bus list ... (3/4) : 덕영고등학교(56151)
+[20:37:35.568617] station arvl bus API Request sent
+[20:37:35.673058] station arvl bus API data received .
+[20:37:35.673154] >> Get additional bus information . [241426001](1/1)
+[20:37:35.673184] route info API Request sent
+[20:37:35.759383] route info API API data received
+[20:37:35.759462] route order info API Request sent
+[20:37:35.875038] route order info API data received
+[20:37:35.875190] Got arvl bus list .       (3/4) : 덕영고등학교(56151)
+[20:37:35.875224] Getting arvl bus list ... (4/4) : 덕영고등학교(56154)
+[20:37:36.031369] station arvl bus API Request sent
+[20:37:36.115814] station arvl bus API data received .
+[20:37:36.115913] >> Get additional bus information . [241426001](1/1)
+[20:37:36.115942] route info API Request sent
+[20:37:36.187150] route info API API data received
+[20:37:36.187232] route order info API Request sent
+[20:37:36.291465] route order info API data received
+[20:37:36.291617] Got arvl bus list .       (4/4) : 덕영고등학교(56154)
+-------------------------------------
+Refresh arvl bus list ...:   0%|          | 0/30 [00:00<?, ?it/s]Refresh arvl bus list ...:   3%|▎         | 1/30 [00:01<00:29,  1.00s/it]Refresh arvl bus list ...:   7%|▋         | 2/30 [00:02<00:28,  1.00s/it]Refresh arvl bus list ...:  10%|█         | 3/30 [00:03<00:27,  1.00s/it]Refresh arvl bus list ...:  13%|█▎        | 4/30 [00:04<00:26,  1.00s/it]Refresh arvl bus list ...:  17%|█▋        | 5/30 [00:05<00:25,  1.00s/it]Refresh arvl bus list ...:  20%|██        | 6/30 [00:06<00:24,  1.00s/it]Refresh arvl bus list ...:  23%|██▎       | 7/30 [00:07<00:23,  1.00s/it]

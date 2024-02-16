@@ -1,0 +1,5 @@
+--led-rows=32 --led-cols=64 --led-chain=7 --led-slowdown-gpio=5 --led-pixel-mapper="V-mapper;Rotate:270"
+
+
+Clock
+./LED-BIT/examples/clock --led-rows=32 --led-cols=64 --led-chain=7 --led-slowdown-gpio=5 --led-pixel-mapper="V-mapper;Rotate:270" -f "./LED-BIT/fonts/10x20.bdf" -d "%m-%d %a %H:%M:%S %p" -C 0,0,0 -O 255,255,255 -x 5 -y 20
