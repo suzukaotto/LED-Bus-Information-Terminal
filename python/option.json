@@ -1,16 +1,20 @@
 {
 	"busStationList": [
 		{
-			"moblieNo": "47307"
+			"moblieNo"    : "47307",
+			"stationDesc" : "[덕영고등학교 파리바게트 앞]"
 		},
 		{
-			"moblieNo": "47574"
+			"moblieNo"   : "47574",
+			"stationDesc" : "[서울병원 앞]"
 		},
 		{
-			"moblieNo": "56151"
+			"moblieNo"    : "56151",
+			"stationDesc" : "[정문 앞]"
 		},
 		{
-			"moblieNo": "56154"
+			"moblieNo"    : "56154",
+			"stationDesc" : "[정문 길 건너]"
 		}
 	]
 }

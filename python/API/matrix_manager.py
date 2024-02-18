@@ -1,40 +1,3 @@
-#!/usr/bin/env python
-import time
-import sys
-import math
-import random
-import os
-import threading
-import tqdm
-from datetime import datetime
-
-
-try:
-    from rgbmatrix import RGBMatrix, RGBMatrixOptions
-except:
-    sys.exit('RGBMatrix library is not installed.\n')
-
-try:
-    from PIL import Image, ImageDraw, ImageFont
-except:
-    sys.exit('PIL library is not installed.\n')
-    
-try:
-    sys.path.append("/home/suzukaotto/BITP")
-    
-    import python.API.app as API
-    
-except Exception as e:
-    print(e)
-    sys.exit('API module is not installed.\n')
-
-
-font_path5             = '/home/suzukaotto/BITP/fonts/SCDream3.otf'
-font_path12            = '/home/suzukaotto/BITP/fonts/SCDream5.otf'
-font_path14            = '/home/suzukaotto/BITP/fonts/SCDream5.otf'
-font_path16            = '/home/suzukaotto/BITP/fonts/SCDream5.otf'
-bus_icon_path          = "python/icon/BUS.png"
-bus_lowPlate_icon_path = "python/icon/BUS_lowPlate.png"
 
 class matrixManager:
     def __init__(self):
@@ -133,6 +96,8 @@ class matrixManager:
             else:
                 bus_arvl_lists.append(arvl_bus_list)
         
+        print(f"{bus_station.stationNm}({bus_station.mobileNo}) {bus_station.gps_x} {bus_station.gps_y}")
+        
         # 고정 변수
         y_loca_col = [0, 13, 26, 39, 52]
         x_loca_row = [0, 10, 63, 93, 130]
@@ -162,8 +127,8 @@ class matrixManager:
             bus_lp_icon = Image.open(bus_lowPlate_icon_path)
                         
             # 고정 문구 출력
-            ### 최상단 버스 "정류소명(모바일번호)"" 출력 및 부가정보 출력
-            stationTitle_text  = "%s (%s)%s" % (bus_station.stationNm, bus_station.mobileNo, ("") if (bus_station.stationDesc == "") else (" " + bus_station.stationDesc))
+            ### 최상단 버스 "정류소명(모바일번호)"" 출력
+            stationTitle_text  = "%s (%s)" % (bus_station.stationNm, bus_station.mobileNo)
             draw.text(((self.size[0]-self.get_text_width(stationTitle_text, self.font12))//2 , y_loca_col[0]), stationTitle_text, 'white', self.font12);
             
             # 한 프레임 출력
@@ -264,7 +229,7 @@ class matrixManager:
         
         ultrafine_dust_text = "보통"
         fine_dust_text      = "좋음"
-        tomo_temp_text      = "%d°C~%d°C" % (3, 11)
+        tomo_temp_text      = "%d°C~%d°C" % (-3, 9)
         
         now = datetime.now()
         weekday_korean = ["월", "화", "수", "목", "금", "토", "일"]
@@ -317,41 +282,23 @@ def update_bus_station_list():
     
     return bus_station_list
 
-def update_bus_station_weather_info(manager:matrixManager, today_date):
-    print(f"----- Getting bus station weather info -----")
-    
-    i=0
-    for bus_station in manager.bus_station_list:
-        i += 1
-        print(API.get_log_datef(), f"Bus station weather info API Request sent ... [{bus_station.stationNm}({bus_station.mobileNo})]({i+1}/{len(manager.bus_station_list)})")
-        tomorrow_TMN, tomorrow_TMX, tomorrow_SKY, tomorrow_PTY = API.get_station_weather_info(bus_station, today_date)
-        
-        bus_station.tomorrow_TMN = tomorrow_TMN
-        bus_station.tomorrow_TMX = tomorrow_TMX
-        bus_station.tomorrow_SKY = tomorrow_SKY
-        bus_station.tomorrow_PTY = tomorrow_PTY
-
-        print(API.get_log_datef(), f"Got bus station weather info . [{bus_station.stationNm}({bus_station.mobileNo})]({i+1}/{len(manager.bus_station_list)})")
-    
-    print(f"--------------------------------------------")
-    
-def update_station_arvl_bus_list(manager:matrixManager):
+def update_station_arvl_bus_list(self):
     print(f"----- Getting arvl bus list -----")
     i = 0
-    for bus_station in manager.bus_station_list:
-        print(API.get_log_datef(), f"Getting arvl bus list ... [{bus_station.stationNm}({bus_station.mobileNo})]({i+1}/{len(manager.bus_station_list)})")
+    for bus_station in self.bus_station_list:
+        print(API.get_log_datef(), f"Getting arvl bus list ... ({i+1}/{len(self.bus_station_list)}) : {bus_station.stationNm}({bus_station.mobileNo})")
         ## 인터넷 연결 확인
         if not API.check_internet_connection():
             continue
         
-        arvl_bus_list_data = API.get_arvl_bus_list(manager.bus_station_list[i])
+        arvl_bus_list_data = API.get_arvl_bus_list(self.bus_station_list[i])
         if arvl_bus_list_data == 4:
             arvl_bus_list_data = []
             arvl_bus_list_data.append(API.noArvlBus())
         
         bus_station.arvl_bus_list = arvl_bus_list_data
         
-        print(API.get_log_datef(), f"Got arvl bus list .       ({i+1}/{len(manager.bus_station_list)}) : {bus_station.stationNm}({bus_station.mobileNo})")
+        print(API.get_log_datef(), f"Got arvl bus list .       ({i+1}/{len(self.bus_station_list)}) : {bus_station.stationNm}({bus_station.mobileNo})")
         i+=1
         
     print(f"-------------------------------------")
@@ -385,182 +332,3 @@ def scheduled_task(scheduled_hour:int=20):
     print("작업이 잘 실행되었습니다.")
     
     threading.Timer(24 * 60 * 60, scheduled_task, args=[scheduled_hour]).start()
-
-
-if __name__ == '__main__':
-    manager = matrixManager()
-    threads = []
-    
-    thread_update_bus_arvl_info = threading.Thread(target=thread_update_arvl_bus_list, args=(manager,))
-    thread_update_bus_arvl_info.daemon = True
-    
-    scheduled_task_thread = threading.Thread(target=scheduled_task)
-    scheduled_task_thread.daemon = True
-    
-    
-    threads.append(thread_update_bus_arvl_info)
-    
-    print(end="\n\n")
-    
-    # manager.system_test()
-    
-    print("---------Program Start---------")
-    
-    manager.text_page(["초기화 중... (1/5)", "하드웨어 시간 갱신 중 ..."])
-    os.system("sudo hwclock -w")
-    
-    manager.text_page(["초기화 중... (2/5)", "scheduled task 생성 중 ..."])
-    scheduled_task_thread.start()
-    
-    for i in range(0, API.retry_attempt+1):
-        try:
-            manager.text_page(["초기화 중... (3/5)", "버스정류소 정보 불러오는 중 ..."])
-            bus_station_list = update_bus_station_list()
-            manager.bus_station_list = bus_station_list
-            break
-        except KeyboardInterrupt:
-            manager.program_kill("KeyboardInterrupt")
-        except:
-            if i == API.retry_attempt:
-                for l in range(300, 0, -1):
-                    manager.text_page(["초기화 중... (3/5)", "버스정류소 정보 불러오는 중 ...", "정보를 불러오는 도중 에러가 발생했습니다.", "재시도에 실패했습니다.", f"자동 종료까지 .. ({l})"])
-                    time.sleep(1)
-                manager.program_kill()
-                
-            else:
-                print("An unknown error occurred and we will retry. (%d/%d)" % (API.retry_attempt - (i+1), API.retry_attempt))
-                manager.text_page(["초기화 중... (3/5)", "버스정류소 정보 불러오는 중 ...", "정보를 불러오는 도중 에러가 발생했습니다.", "재시도 중... (%d/%d)" % (API.retry_attempt - (i+1), API.retry_attempt)])
-                time.sleep(0.5)
-                continue
-    
-    for i in range(0, API.retry_attempt+1):
-        try:
-            manager.text_page(["초기화 중... (3/5)", "버스정류소 정보 불러오는 중 ..."])
-            bus_station_list = update_bus_station_list()
-            manager.bus_station_list = bus_station_list
-            break
-        except KeyboardInterrupt:
-            manager.program_kill("KeyboardInterrupt")
-        except:
-            if i == API.retry_attempt:
-                for l in range(300, 0, -1):
-                    manager.text_page(["초기화 중... (3/5)", "버스정류소 정보 불러오는 중 ...", "정보를 불러오는 도중 에러가 발생했습니다.", "재시도에 실패했습니다.", f"자동 종료까지 .. ({l})"])
-                    time.sleep(1)
-                manager.program_kill()
-                
-            else:
-                print("An unknown error occurred and we will retry. (%d/%d)" % (API.retry_attempt - (i+1), API.retry_attempt))
-                manager.text_page(["초기화 중... (3/5)", "버스정류소 정보 불러오는 중 ...", "정보를 불러오는 도중 에러가 발생했습니다.", "재시도 중... (%d/%d)" % (API.retry_attempt - (i+1), API.retry_attempt)])
-                time.sleep(0.5)
-                continue
-    
-    # for i in range(0, API.retry_attempt+1):
-    #     try:
-    #         manager.text_page(["초기화 중... (4/5)", "버스정류소 날씨 정보 불러오는 중 ..."])
-    #         today_date = datetime.today().strftime("%Y%m%d")
-    #         update_bus_station_weather_info(manager, today_date)
-    #         break
-    #     except KeyboardInterrupt:
-    #         manager.program_kill("KeyboardInterrupt")
-    #     except Exception as e:
-    #         if i == API.retry_attempt:
-    #             for l in range(300, 0, -1):
-    #                 manager.text_page(["초기화 중... (4/5)", "버스정류소 날씨 정보 불러오는 중 ...", "정보를 불러오는 도중 에러가 발생했습니다.", "재시도에 실패했습니다.", f"자동 종료까지 .. ({l})"])
-    #                 time.sleep(1)
-    #             manager.program_kill(e)
-                
-    #         else:
-    #             print("An unknown error occurred and we will retry. (%d/%d)" % (API.retry_attempt - (i+1), API.retry_attempt))
-    #             manager.text_page(["초기화 중... (4/5)", "버스정류소 날씨 정보 불러오는 중 ...", "정보를 불러오는 도중 에러가 발생했습니다.", "재시도 중... (%d/%d)" % (API.retry_attempt - (i+1), API.retry_attempt)])
-    #             time.sleep(0.5)
-    #             continue
-    
-    for i in range(0, API.retry_attempt+1):
-        try:
-            manager.text_page(["초기화 중... (4/5)", "버스정류소 정보 불러오는 중 ..."])
-            bus_station_list = update_bus_station_list()
-            manager.bus_station_list = bus_station_list
-            break
-        except KeyboardInterrupt:
-            manager.program_kill("KeyboardInterrupt")
-        except:
-            if i == API.retry_attempt:
-                for l in range(300, 0, -1):
-                    manager.text_page(["초기화 중... (4/5)", "버스정류소 정보 불러오는 중 ...", "정보를 불러오는 도중 에러가 발생했습니다.", "재시도에 실패했습니다.", f"자동 종료까지 .. ({l})"])
-                    time.sleep(1)
-                manager.program_kill()
-                
-            else:
-                print("An unknown error occurred and we will retry. (%d/%d)" % (API.retry_attempt - (i+1), API.retry_attempt))
-                manager.text_page(["초기화 중... (4/5)", "버스정류소 정보 불러오는 중 ...", "정보를 불러오는 도중 에러가 발생했습니다.", "재시도 중... (%d/%d)" % (API.retry_attempt - (i+1), API.retry_attempt)])
-                time.sleep(0.5)
-                continue
-    
-    
-    
-    for i in range(0, API.retry_attempt+1):
-        try:
-            manager.text_page(["초기화 중... (5/5)", "곧 도착 버스 정보 불러오는 중 ..."])
-            update_station_arvl_bus_list(manager)
-            break
-        except KeyboardInterrupt:
-            manager.program_kill("KeyboardInterrupt")
-        except:
-            print("An unknown error occurred and we will retry. (%d/%d)" % (API.retry_attempt - (i+1), API.retry_attempt))
-            manager.text_page(["초기화 중... (5/5)", "곧 도착 버스 정보 불러오는 중 ...", "정보를 불러오는 도중 에러가 발생했습니다.", "재시도 중... (%d/%d)" % (API.retry_attempt - (i+1), API.retry_attempt)])
-            time.sleep(0.5)
-            continue
-    
-    print("-------------------------------")
-    
-    if manager.bus_station_list == []:
-        try:
-            for i in range(300, 0, -6):
-                manager.text_page(["불러와진 정류소가 없습니다.", f"자동 종료까지 ... ({i})"])
-                time.sleep(1)
-                manager.text_page(["불러와진 정류소가 없습니다.", f"자동 종료까지 ... ({i-1})"])
-                time.sleep(1)
-                manager.text_page(["불러와진 정류소가 없습니다.", f"자동 종료까지 ... ({i-2})"])
-                time.sleep(1)
-                manager.text_page(["options.json 파일을 확인해주세요.", f"자동 종료까지 ... ({i-3})"])
-                time.sleep(1)
-                manager.text_page(["options.json 파일을 확인해주세요.", f"자동 종료까지 ... ({i-4})"])
-                time.sleep(1)
-                manager.text_page(["options.json 파일을 확인해주세요.", f"자동 종료까지 ... ({i-5})"])
-                time.sleep(1)
-        except KeyboardInterrupt:
-            manager.program_kill("KeyboardInterrupt")
-            manager.program_kill("불러와진 정류소가 없습니다.")
-    
-    thread_update_bus_arvl_info.start()
-    
-    while 1:
-        for bus_station in manager.bus_station_list:
-            while True:
-                try:
-                    for i in range(0, 3+1):
-                        manager.bus_arvl_page(bus_station)
-                except KeyboardInterrupt:
-                    manager.program_kill("KeyboardInterrupt")
-                except Exception as e:
-                    manager.text_page(["bus_arvl_page Error", e])
-                    print(f"bus_arvl_page Error: {e}")
-                    time.sleep(5)
-                    continue            
-                break
-            
-            for i in range(0, 50):
-                while True:
-                    try:
-                        manager.etc_page(bus_station)
-                    except KeyboardInterrupt:
-                        manager.program_kill("KeyboardInterrupt")
-                    except Exception as e:
-                        manager.text_page(["etc_page Error", e])
-                        print(f"etc_page Error: {e}")
-                        time.sleep(5)
-                        continue
-                    break
-                time.sleep(0.1)
-    
-    manager.program_kill()

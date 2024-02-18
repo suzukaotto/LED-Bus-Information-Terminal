@@ -42,6 +42,7 @@ def get_bus_station_list() -> list:
     for busStation in option_bus_station_list:
         ## busStationList 안에 moblieNo 불러오기
         station_moblieNo = busStation.get('moblieNo', None)
+        stationDesc      = busStation.get('stationDesc', "")
         ## busStationList 안에 moblieNo 이 없을 경우
         if station_moblieNo == None:
             raise Exception("The moblieNo Key cannot be found in the busStationList Key in the option.json file.")
@@ -56,7 +57,6 @@ def get_bus_station_list() -> list:
         elif api_data_error_check_value == 4:
             ### 결과가 존재하지 않을 경우
             print(f"There is no bus stop information corresponding to moblieNo. (Registered moblieNo: '{station_moblieNo}')")
-            
             continue
         else:
             ### 기타 문제가 있을 경우
@@ -70,15 +70,67 @@ def get_bus_station_list() -> list:
         if type(station_data) == list:
             station_data = station_data[0]
         
-        stationId = station_data.get('stationId', None)
-        stationNm = station_data.get('stationName', None)
-        mobileNo  = station_data.get('mobileNo', None)
-        y         = station_data.get('y', None)
-        x         = station_data.get('x', None)
+        stationId =       station_data.get('stationId', None)
+        stationNm =       station_data.get('stationName', None)
+        mobileNo  =       station_data.get('mobileNo', None)
+        gps_y     = float(station_data.get('y', None))
+        gps_x     = float(station_data.get('x', None))
         
-        bus_station_list.append(BusStation(stationId, stationNm, mobileNo, y, x))
+        bus_station_list.append(BusStation(stationId, stationNm, stationDesc, mobileNo, gps_y, gps_x))
     
     return bus_station_list
+
+def get_station_weather_info(bus_station:BusStation, today_date):
+    # 금일 최저, 최고 기온 조회 및 미세먼지 수치 조회
+    response_weather_info = get_tomorrow_weater(serviceKey, bus_station.gps_y, bus_station.gps_x, today_date)
+    api_data_error_check_value = api_data_error_check(response_weather_info)
+
+    if api_data_error_check_value == 0:
+        pass
+    else:
+        raise Exception(f"[get_station_weather_info] An unknown error occurred. ({api_data_error_check_value})")
+
+    # 필요한 값 쿼리
+    weather_items = response_weather_info['response']['body']['items']['item']
+
+    today = today_date
+    tomorrow = today + datetime.timedelta(days=1)
+
+    today = f"{today.year}{today.month:02d}{today.day:02d}"
+    tomorrow = f"{tomorrow.year}{tomorrow.month:02d}{tomorrow.day:02d}"
+
+    tomorrow_TMN = ""
+    tomorrow_TMX = ""
+    tomorrow_SKY = ""
+    tomorrow_PTY = ""
+    
+    for item in weather_items:
+        try:
+            if (item['category'] == "TMN") and (item['fcstDate'] == tomorrow): # 일 최저기온
+                tomorrow_TMN = item['fcstValue']
+        except:
+            tomorrow_TMN = None
+        
+        try:
+            if (item['category'] == "TMX") and (item['fcstDate'] == tomorrow): # 일 최저기온
+                tomorrow_TMX = item['fcstValue']
+        except:
+            tomorrow_TMX = None
+        
+        try:
+            if (item['category'] == "SKY") and (item['fcstDate'] == tomorrow): # 일 최저기온
+                tomorrow_SKY = item['fcstValue']
+        except:
+            tomorrow_SKY = None
+        
+        try:
+            if (item['category'] == "PTY") and (item['fcstDate'] == tomorrow): # 일 최저기온
+                tomorrow_PTY = item['fcstValue']
+        except:
+            tomorrow_PTY = None
+        
+    return (tomorrow_TMN, tomorrow_TMX, tomorrow_SKY, tomorrow_PTY)
+        
 
 def get_arvl_bus_list(bus_station:BusStation):
     # 버스도착정보 조회, 곧 도착 버스 별 정보 조회 및 추가

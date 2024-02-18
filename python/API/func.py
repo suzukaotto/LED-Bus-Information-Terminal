@@ -27,13 +27,18 @@ except:
 retry_attempt = 30
 
 class BusStation:
-    def __init__(self, stationId, stationNm, mobileNo, y, x):
+    def __init__(self, stationId, stationNm, stationDesc, mobileNo, y, x):
         self.stationId     = stationId      # 정류소 아이디
         self.stationNm     = stationNm      # 정류소명
+        self.stationDesc   = stationDesc    # 정류소 부가 정보
         self.mobileNo      = mobileNo       # 정류소 모바일 번호 (5자리 숫자)
         self.gps_y         = y              # 정류소 위도
         self.gps_x         = x              # 정류소 경도
         self.arvl_bus_list = []             # 정류소 곧 도착 버스 리스트
+        self.tomorrow_TMN  = None           # 정류소 금일 최저 기온
+        self.tomorrow_TMX  = None           # 정류소 금일 최고 기온
+        self.tomorrow_SKY  = None           # 하늘상태 [맑음(1), 구름많음(3), 흐림(4)]
+        self.tomorrow_PTY  = None           # 강수형태 [없음(0), 비(1), 비/눈(2), 눈(3), 소나기(4)]
         
 class ArvlBus:
     def __init__(self, flag, locationNo, lowPlate, plateNo, predictTime, remainSeatCnt, routeId, staOrder, stationId):
@@ -132,6 +137,25 @@ def get_station_info(serviceKey, keyword):
     response = xml_to_dict(response.content)
 
     return response
+
+def get_tomorrow_weater(serviceKey:str, gps_y:str, gps_x:str, today_date:str):
+    url = "http://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getVilageFcst"
+    params = {
+        "serviceKey" : serviceKey,
+        "numOfRows"  : "1000",
+        "pageNo"     : "1",
+        "base_date"  : today_date,
+        "base_time"  : "0500",
+        "nx"         : gps_x,
+        "ny"         : gps_y
+    }
+
+    response = requests.get(url, params=params)
+    response.raise_for_status()
+    response = xml_to_dict(response, indent=2)
+
+    return response
+        
 
 def api_data_error_check(response_data, print_normal_result:bool = False) -> int:
     errData = response_data.get('OpenAPI_ServiceResponse', None)
