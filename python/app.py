@@ -367,9 +367,13 @@ class matrixManager:
         self.matrix.SetImage(image.convert('RGB'))
     
     def program_kill(self, reason:str=""):
-        for i in range(3, 0, -1):
-            self.text_page([f"프로그램 종료 됨 .. ({i})", reason])
-            time.sleep(1)
+        try:
+            for i in range(3, 0, -1):
+                self.text_page([f"프로그램 종료 됨 .. ({i})", reason])
+                time.sleep(1)
+        except:
+            pass
+        
         print(API.get_log_datef()+" Program Ended")
         self.text_page()
         exit(0)
@@ -497,9 +501,27 @@ if __name__ == '__main__':
     manager.text_page(["초기화 중... (1/6)", "하드웨어 시간 갱신 중 ..."])
     os.system("sudo hwclock -w")
     
-    # 쓰레드 생성
-    manager.text_page(["초기화 중... (2/6)", "scheduled task 생성 중 ..."])
-    scheduled_task_thread.start()
+    # 버스정류소 정보 가져오기
+    for i in range(0, API.retry_attempt+1):
+        try:
+            manager.text_page(["초기화 중... (2/6)", "버스정류소 정보 불러오는 중 ..."])
+            bus_station_list = update_bus_station_list()
+            manager.bus_station_list = bus_station_list
+            break
+        except KeyboardInterrupt:
+            manager.program_kill("KeyboardInterrupt")
+        except:
+            if i == API.retry_attempt:
+                for l in range(300, 0, -1):
+                    manager.text_page(["초기화 중... (2/6)", "버스정류소 정보 불러오는 중 ...", "정보를 불러오는 도중 에러가 발생했습니다.", "재시도에 실패했습니다.", f"자동 종료까지 .. ({l})"])
+                    time.sleep(1)
+                manager.program_kill("버스정류소 정보 로드 실패")
+                
+            else:
+                print("An unknown error occurred and we will retry. (%d/%d)" % (API.retry_attempt - (i+1), API.retry_attempt))
+                manager.text_page(["초기화 중... (2/6)", "버스정류소 정보 불러오는 중 ...", "정보를 불러오는 도중 에러가 발생했습니다.", "재시도 중... (%d/%d)" % (API.retry_attempt - (i+1), API.retry_attempt)])
+                time.sleep(0.5)
+                continue
     
     # 날씨 정보 가져오기
     for i in range(0, API.retry_attempt+1):
@@ -543,32 +565,11 @@ if __name__ == '__main__':
                 time.sleep(0.5)
                 continue
     
-    # 버스정류소 정보 가져오기
-    for i in range(0, API.retry_attempt+1):
-        try:
-            manager.text_page(["초기화 중... (5/6)", "버스정류소 정보 불러오는 중 ..."])
-            bus_station_list = update_bus_station_list()
-            manager.bus_station_list = bus_station_list
-            break
-        except KeyboardInterrupt:
-            manager.program_kill("KeyboardInterrupt")
-        except:
-            if i == API.retry_attempt:
-                for l in range(300, 0, -1):
-                    manager.text_page(["초기화 중... (5/6)", "버스정류소 정보 불러오는 중 ...", "정보를 불러오는 도중 에러가 발생했습니다.", "재시도에 실패했습니다.", f"자동 종료까지 .. ({l})"])
-                    time.sleep(1)
-                manager.program_kill("버스정류소 정보 로드 실패")
-                
-            else:
-                print("An unknown error occurred and we will retry. (%d/%d)" % (API.retry_attempt - (i+1), API.retry_attempt))
-                manager.text_page(["초기화 중... (5/6)", "버스정류소 정보 불러오는 중 ...", "정보를 불러오는 도중 에러가 발생했습니다.", "재시도 중... (%d/%d)" % (API.retry_attempt - (i+1), API.retry_attempt)])
-                time.sleep(0.5)
-                continue
     
     # 곧 도착 버스 정보 가져오기
     for i in range(0, API.retry_attempt+1):
         try:
-            manager.text_page(["초기화 중... (6/6)", "곧 도착 버스 정보 불러오는 중 ..."])
+            manager.text_page(["초기화 중... (5/6)", "곧 도착 버스 정보 불러오는 중 ..."])
             update_station_arvl_bus_list(manager)
             break
         except KeyboardInterrupt:
@@ -576,16 +577,19 @@ if __name__ == '__main__':
         except:
             if i == API.retry_attempt:
                 for l in range(300, 0, -1):
-                    manager.text_page(["초기화 중... (6/6)", "곧 도착 버스 정보 불러오는 중 ...", "정보를 불러오는 도중 에러가 발생했습니다.", "재시도에 실패했습니다.", f"자동 종료까지 .. ({l})"])
+                    manager.text_page(["초기화 중... (5/6)", "곧 도착 버스 정보 불러오는 중 ...", "정보를 불러오는 도중 에러가 발생했습니다.", "재시도에 실패했습니다.", f"자동 종료까지 .. ({l})"])
                     time.sleep(1)
                 manager.program_kill("곧 도착 버스 정보 로드 실패")
                 
             else:
                 print("An unknown error occurred and we will retry. (%d/%d)" % (API.retry_attempt - (i+1), API.retry_attempt))
-                manager.text_page(["초기화 중... (6/6)", "곧 도착 버스 정보 불러오는 중 ...", "정보를 불러오는 도중 에러가 발생했습니다.", "재시도 중... (%d/%d)" % (API.retry_attempt - (i+1), API.retry_attempt)])
+                manager.text_page(["초기화 중... (5/6)", "곧 도착 버스 정보 불러오는 중 ...", "정보를 불러오는 도중 에러가 발생했습니다.", "재시도 중... (%d/%d)" % (API.retry_attempt - (i+1), API.retry_attempt)])
                 time.sleep(0.5)
                 continue
     
+    # 쓰레드 생성
+    manager.text_page(["초기화 중... (6/6)", "scheduled task 생성 중 ..."])
+    scheduled_task_thread.start()
     print("-------------------------------")
     
     if manager.bus_station_list == []:
@@ -603,9 +607,9 @@ if __name__ == '__main__':
                 time.sleep(1)
                 manager.text_page(["options.json 파일을 확인해주세요.", f"자동 종료까지 ... ({i-5})"])
                 time.sleep(1)
+            manager.program_kill("불러와진 정류소가 없습니다.")
         except KeyboardInterrupt:
             manager.program_kill("KeyboardInterrupt")
-            manager.program_kill("불러와진 정류소가 없습니다.")
     
     thread_update_bus_arvl_info.start()
     

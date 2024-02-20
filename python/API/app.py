@@ -233,9 +233,6 @@ def get_weather_info():
 
     # 필요한 값 쿼리
     
-    with open(f'./log/{today}.txt', 'w') as w:
-        w.write(json.dumps(response_weather_info, indent=4))
-    
     weather_items = response_weather_info['response']['body']['items']['item']
 
     tomorrow_TMN = ""
