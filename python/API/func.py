@@ -138,7 +138,7 @@ def get_station_info(serviceKey, keyword):
 
     return response
 
-def get_tomorrow_weater(serviceKey:str, gps_y:str, gps_x:str, today_date:str):
+def get_tomorrow_weater(serviceKey:str, today_date:str):
     url = "http://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getVilageFcst"
     params = {
         "serviceKey" : serviceKey,
@@ -146,16 +146,32 @@ def get_tomorrow_weater(serviceKey:str, gps_y:str, gps_x:str, today_date:str):
         "pageNo"     : "1",
         "base_date"  : today_date,
         "base_time"  : "0500",
-        "nx"         : gps_x,
-        "ny"         : gps_y
+        "nx"         : "37",
+        "ny"         : "127"
     }
 
     response = requests.get(url, params=params)
     response.raise_for_status()
-    response = xml_to_dict(response, indent=2)
-
+    response = xml_to_dict(response.content, indent=2)
+    
     return response
-        
+
+def get_now_f_dust_info(serviceKey):
+    url = "http://apis.data.go.kr/B552584/ArpltnInforInqireSvc/getCtprvnRltmMesureDnsty"
+    params = {
+        "serviceKey" : serviceKey,
+        "returnType" : "xml",
+        "numOfRows"  : 100,
+        "pageNo"     : 1,
+        "sidoName"   : "경기",
+        "ver"        : "1.0",
+    }
+    
+    response = requests.get(url, params=params)
+    response.raise_for_status()
+    response = xml_to_dict(response.content, indent=2)
+    
+    return response
 
 def api_data_error_check(response_data, print_normal_result:bool = False) -> int:
     errData = response_data.get('OpenAPI_ServiceResponse', None)

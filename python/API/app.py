@@ -80,56 +80,6 @@ def get_bus_station_list() -> list:
     
     return bus_station_list
 
-def get_station_weather_info(bus_station:BusStation, today_date):
-    # 금일 최저, 최고 기온 조회 및 미세먼지 수치 조회
-    response_weather_info = get_tomorrow_weater(serviceKey, bus_station.gps_y, bus_station.gps_x, today_date)
-    api_data_error_check_value = api_data_error_check(response_weather_info)
-
-    if api_data_error_check_value == 0:
-        pass
-    else:
-        raise Exception(f"[get_station_weather_info] An unknown error occurred. ({api_data_error_check_value})")
-
-    # 필요한 값 쿼리
-    weather_items = response_weather_info['response']['body']['items']['item']
-
-    today = today_date
-    tomorrow = today + datetime.timedelta(days=1)
-
-    today = f"{today.year}{today.month:02d}{today.day:02d}"
-    tomorrow = f"{tomorrow.year}{tomorrow.month:02d}{tomorrow.day:02d}"
-
-    tomorrow_TMN = ""
-    tomorrow_TMX = ""
-    tomorrow_SKY = ""
-    tomorrow_PTY = ""
-    
-    for item in weather_items:
-        try:
-            if (item['category'] == "TMN") and (item['fcstDate'] == tomorrow): # 일 최저기온
-                tomorrow_TMN = item['fcstValue']
-        except:
-            tomorrow_TMN = None
-        
-        try:
-            if (item['category'] == "TMX") and (item['fcstDate'] == tomorrow): # 일 최저기온
-                tomorrow_TMX = item['fcstValue']
-        except:
-            tomorrow_TMX = None
-        
-        try:
-            if (item['category'] == "SKY") and (item['fcstDate'] == tomorrow): # 일 최저기온
-                tomorrow_SKY = item['fcstValue']
-        except:
-            tomorrow_SKY = None
-        
-        try:
-            if (item['category'] == "PTY") and (item['fcstDate'] == tomorrow): # 일 최저기온
-                tomorrow_PTY = item['fcstValue']
-        except:
-            tomorrow_PTY = None
-        
-    return (tomorrow_TMN, tomorrow_TMX, tomorrow_SKY, tomorrow_PTY)
         
 
 def get_arvl_bus_list(bus_station:BusStation):
@@ -263,3 +213,74 @@ def get_arvl_bus_list(bus_station:BusStation):
     
     
     return arvl_bus_list
+
+def get_weather_info():
+    # 금일 최저, 최고 기온 조회 및 미세먼지 수치 조회
+    today = datetime.datetime.today()
+    tomorrow = today + datetime.timedelta(days=1)
+    
+    today = f"{today.year}{today.month:02d}{today.day:02d}"
+    tomorrow = f"{tomorrow.year}{tomorrow.month:02d}{tomorrow.day:02d}"
+    
+    response_weather_info = get_tomorrow_weater(serviceKey, today)
+    # api_data_error_check_value = api_data_error_check(response_weather_info)
+
+
+    # if api_data_error_check_value == 0:
+    #     pass
+    # else:
+    #     raise Exception(f"[get_station_weather_info] An unknown error occurred. ({api_data_error_check_value})")
+
+    # 필요한 값 쿼리
+    
+    with open(f'./log/{today}.txt', 'w') as w:
+        w.write(json.dumps(response_weather_info, indent=4))
+    
+    weather_items = response_weather_info['response']['body']['items']['item']
+
+    tomorrow_TMN = ""
+    tomorrow_TMX = ""
+    tomorrow_SKY = ""
+    tomorrow_PTY = ""
+    
+    for item in weather_items:
+        try:
+            if (item['category'] == "TMN") and (item['fcstDate'] == tomorrow): # 일 최저기온
+                tomorrow_TMN = item.get('fcstValue', None)
+        except:
+            tomorrow_TMN = None
+        
+        try:
+            if (item['category'] == "TMX") and (item['fcstDate'] == tomorrow): # 일 최저기온
+                tomorrow_TMX = item.get('fcstValue', None)
+        except:
+            tomorrow_TMX = None
+        
+        try:
+            if (item['category'] == "SKY") and (item['fcstDate'] == tomorrow): # 일 최저기온
+                tomorrow_SKY = item.get('fcstValue', None)
+        except:
+            tomorrow_SKY = None
+        
+        try:
+            if (item['category'] == "PTY") and (item['fcstDate'] == tomorrow): # 일 최저기온
+                tomorrow_PTY = item.get('fcstValue', None)
+        except:
+            tomorrow_PTY = None
+        
+    return (tomorrow_TMN, tomorrow_TMX, tomorrow_SKY, tomorrow_PTY)
+
+def get_f_dust_info():
+    pm10Value = None # 미세먼지
+    pm25Value = None # 초미세먼지
+    
+    response_f_dust_info = get_now_f_dust_info(serviceKey)
+    
+    items = response_f_dust_info['response']['body']['items']['item']
+
+    for item in items:
+        if item["stationName"] == "김량장동":
+            pm10Value = item["pm10Value"]
+            pm25Value = item["pm25Value"]
+    
+    return pm10Value, pm25Value

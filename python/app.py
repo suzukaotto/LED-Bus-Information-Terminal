@@ -63,8 +63,17 @@ class matrixManager:
         # 현재버스위치 표시 관련
         self.x_loca_bus_now_sta = [132, 132, 132, 39]
         self.bus_now_sta_text_delay = [30, 30, 30, 30]
+        
+        # 날씨 정보 관련
+        self.tmrw_TMN = None # 내일 최저기온
+        self.tmrw_TMX = None # 내일 최고기온
+        self.tmrw_SKY = None # 내일 하늘상태
+        self.tmrw_PTY = None # 내일 강수상태
+        
+        self.pm10Value = None # 미세먼지
+        self.pm25Value = None # 초미세먼지
     
-    def system_test(self, num_shapes=10):
+    def system_test(self):
         print(f"----- System Testing -----")
         
         canvas = Image.new('RGB', self.size, "black")
@@ -193,9 +202,9 @@ class matrixManager:
                     elif arvl_bus_list.remainSeatCnt == "여유":
                         draw.text((x_loca_row[2], y_loca_col[l+1]), f"({arvl_bus_list.remainSeatCnt})", 'magenta', self.font12);
                     elif arvl_bus_list.remainSeatCnt == "보통":
-                        draw.text((x_loca_row[2], y_loca_col[l+1]), f"({arvl_bus_list.remainSeatCnt})", 'blue', self.font12);
+                        draw.text((x_loca_row[2], y_loca_col[l+1]), f"({arvl_bus_list.remainSeatCnt})", 'lime', self.font12);
                     elif arvl_bus_list.remainSeatCnt == "혼잡":
-                        draw.text((x_loca_row[2], y_loca_col[l+1]), f"({arvl_bus_list.remainSeatCnt})", 'red', self.font12);
+                        draw.text((x_loca_row[2], y_loca_col[l+1]), f"({arvl_bus_list.remainSeatCnt})", 'yellow', self.font12);
                     
                     
                     ## 버스 도착 예정 시간 출력
@@ -262,9 +271,70 @@ class matrixManager:
         y_loca_col = [1, 16, 32, 48]
         x_loca_row = [1, 74, 83]
         
-        ultrafine_dust_text = "보통"
-        fine_dust_text      = "좋음"
-        tomo_temp_text      = "%d°C~%d°C" % (3, 11)
+        # 좋음 보통 나쁨 매우나쁨 aqua lime yellow orange
+        uf_dust_text    = ["", "white"]
+        f_dust_text     = ["", "white"]
+        sky_state_text  = ""
+        rain_state_text = ""
+        
+        # 미세먼지 정보 저장
+        ## 미세먼지
+        if self.pm10Value is not None:
+            if 0 <= self.pm10Value < 30:
+                f_dust_text = ["좋음", "aqua"] 
+            elif 30 <= self.pm10Value < 80:
+                f_dust_text = ["보통", "lime"]
+            elif 80 <= self.pm10Value < 150:
+                f_dust_text = ["나쁨", "yellow"]
+            elif self.pm10Value >= 150:
+                f_dust_text = ["매우나쁨", "orange"]
+        ## 초미세먼지
+        if self.pm25Value is not None:
+            if 0 <= self.pm25Value < 15:
+                uf_dust_text = ["좋음", "aqua"] 
+            elif 15 <= self.pm25Value < 35:
+                uf_dust_text = ["보통", "lime"]
+            elif 35 <= self.pm25Value < 75:
+                uf_dust_text = ["나쁨", "yellow"]
+            elif self.pm25Value >= 75:
+                uf_dust_text = ["매우나쁨", "orange"]
+                
+        # 오늘의 날씨 출력
+        if (self.tmrw_TMN == None) and (self.tmrw_TMX == None):
+            tmrw_temp_text      = ""
+        else:
+            ## 하늘 상태
+            if (self.tmrw_SKY != None) and (self.tmrw_SKY != 0):
+                if self.tmrw_SKY == 1:
+                    sky_state_text = "맑음"
+                if self.tmrw_SKY == 3:
+                    sky_state_text = "구름"
+                if self.tmrw_SKY == 4:
+                    sky_state_text = "흐림"
+                    
+            ## 강수 상태
+            if (self.tmrw_PTY != None) and (self.tmrw_PTY != 0):
+                if self.tmrw_PTY == 1:
+                    rain_state_text = "비"
+                if self.tmrw_PTY == 2:
+                    rain_state_text = "진눈깨비"
+                if self.tmrw_PTY == 3:
+                    rain_state_text = "눈" 
+                if self.tmrw_PTY == 4:
+                    rain_state_text = "소나기" 
+            
+            ## 강수 상태 있을 시 선 출력
+            if rain_state_text != "":
+                tmrw_temp_text = "%d°C~%d°C (%s)" % (self.tmrw_TMN, self.tmrw_TMX, rain_state_text)
+            
+            ## 강수 상태가 없고 하늘상태만 있을 시
+            elif sky_state_text != "":
+                tmrw_temp_text = "%d°C~%d°C (%s)" % (self.tmrw_TMN, self.tmrw_TMX, sky_state_text)
+            
+            ## 아무 상태 없을 시
+            else:
+                tmrw_temp_text = "%d°C~%d°C" % (self.tmrw_TMN, self.tmrw_TMX)
+
         
         now = datetime.now()
         weekday_korean = ["월", "화", "수", "목", "금", "토", "일"]
@@ -287,9 +357,9 @@ class matrixManager:
         draw.text((x_loca_row[1], y_loca_col[2]), ":", "white", self.font14)
         draw.text((x_loca_row[1], y_loca_col[3]), ":", "white", self.font14)
         
-        draw.text((x_loca_row[2], y_loca_col[1]), ultrafine_dust_text, "yellow", self.font14)
-        draw.text((x_loca_row[2], y_loca_col[2]), fine_dust_text,      "lime", self.font14)
-        draw.text((x_loca_row[2], y_loca_col[3]), tomo_temp_text,      "white", self.font14)
+        draw.text((x_loca_row[2], y_loca_col[1]), uf_dust_text[0], uf_dust_text[1], self.font14)
+        draw.text((x_loca_row[2], y_loca_col[2]), f_dust_text[0],  f_dust_text[1], self.font14)
+        draw.text((x_loca_row[2], y_loca_col[3]), tmrw_temp_text,  "white", self.font14)
         
         self.refresh(canvas)    
     
@@ -316,24 +386,6 @@ def update_bus_station_list():
     print(f"------------------------------------")
     
     return bus_station_list
-
-def update_bus_station_weather_info(manager:matrixManager, today_date):
-    print(f"----- Getting bus station weather info -----")
-    
-    i=0
-    for bus_station in manager.bus_station_list:
-        i += 1
-        print(API.get_log_datef(), f"Bus station weather info API Request sent ... [{bus_station.stationNm}({bus_station.mobileNo})]({i+1}/{len(manager.bus_station_list)})")
-        tomorrow_TMN, tomorrow_TMX, tomorrow_SKY, tomorrow_PTY = API.get_station_weather_info(bus_station, today_date)
-        
-        bus_station.tomorrow_TMN = tomorrow_TMN
-        bus_station.tomorrow_TMX = tomorrow_TMX
-        bus_station.tomorrow_SKY = tomorrow_SKY
-        bus_station.tomorrow_PTY = tomorrow_PTY
-
-        print(API.get_log_datef(), f"Got bus station weather info . [{bus_station.stationNm}({bus_station.mobileNo})]({i+1}/{len(manager.bus_station_list)})")
-    
-    print(f"--------------------------------------------")
     
 def update_station_arvl_bus_list(manager:matrixManager):
     print(f"----- Getting arvl bus list -----")
@@ -355,6 +407,41 @@ def update_station_arvl_bus_list(manager:matrixManager):
         i+=1
         
     print(f"-------------------------------------")
+    
+def update_weather_info(manager:matrixManager):
+    print(f"----- Getting weather info -----")
+    
+    print(API.get_log_datef(), f"weather info API Request sent ...")
+    tomorrow_TMN, tomorrow_TMX, tomorrow_SKY, tomorrow_PTY = API.get_weather_info()
+    print(API.get_log_datef(), f"Got station weather info .")
+    
+    try:
+        manager.tmrw_TMN = int(float(tomorrow_TMN))
+        manager.tmrw_TMX = int(float(tomorrow_TMX))
+        manager.tmrw_SKY = int(float(tomorrow_SKY))
+        manager.tmrw_PTY = int(float(tomorrow_PTY))
+        
+    except Exception as e:
+        print(f"Type conversion failed : {e}")
+        pass
+    
+    print(f"--------------------------------")
+
+def update_f_dust_info(manager:matrixManager):
+    print(f"----- Getting fine dust info -----")
+    
+    print(API.get_log_datef(), f"fine dust info API Request sent ...")
+    pm10Value, pm25Value = API.get_f_dust_info()
+    print(API.get_log_datef(), f"Got fine dust info .")
+    
+    try:
+        manager.pm10Value = int(pm10Value)
+        manager.pm25Value = int(pm25Value)
+    except Exception as e:
+        print(f"Type conversion failed : {e}")
+        pass
+    
+    print(f"----------------------------------")
 
 def thread_update_arvl_bus_list(manager):
     while True:
@@ -402,19 +489,64 @@ if __name__ == '__main__':
     
     print(end="\n\n")
     
-    # manager.system_test()
+    manager.system_test()
     
     print("---------Program Start---------")
     
-    manager.text_page(["초기화 중... (1/5)", "하드웨어 시간 갱신 중 ..."])
+    # 하드웨어 시간 갱신
+    manager.text_page(["초기화 중... (1/6)", "하드웨어 시간 갱신 중 ..."])
     os.system("sudo hwclock -w")
     
-    manager.text_page(["초기화 중... (2/5)", "scheduled task 생성 중 ..."])
+    # 쓰레드 생성
+    manager.text_page(["초기화 중... (2/6)", "scheduled task 생성 중 ..."])
     scheduled_task_thread.start()
     
+    # 날씨 정보 가져오기
     for i in range(0, API.retry_attempt+1):
         try:
-            manager.text_page(["초기화 중... (3/5)", "버스정류소 정보 불러오는 중 ..."])
+            manager.text_page(["초기화 중... (3/6)", "날씨 정보 불러오는 중 ..."])
+            update_weather_info(manager)
+            break
+        except KeyboardInterrupt:
+            manager.program_kill("KeyboardInterrupt")
+        except Exception as e:
+            if i == API.retry_attempt:
+                for l in range(300, 0, -1):
+                    manager.text_page(["초기화 중... (3/6)", "날씨 정보 불러오는 중 ...", "정보를 불러오는 도중 에러가 발생했습니다.", "재시도에 실패했습니다.", f"자동 종료까지 .. ({l})"])
+                    time.sleep(1)
+                manager.program_kill("날씨 정보 로드 실패")
+                
+            else:
+                print("An unknown error occurred and we will retry. (%d/%d) : %s" % (API.retry_attempt - (i+1), API.retry_attempt, e))
+                manager.text_page(["초기화 중... (3/6)", "날씨 정보 불러오는 중 ...", "정보를 불러오는 도중 에러가 발생했습니다.", "재시도 중... (%d/%d)" % (API.retry_attempt - (i+1), API.retry_attempt)])
+                time.sleep(0.5)
+                continue
+    
+    # 미세먼지, 초미세먼지 정보 가져오기
+    for i in range(0, API.retry_attempt+1):
+        try:
+            manager.text_page(["초기화 중... (4/6)", "미세먼지 정보 불러오는 중 ..."])
+            update_f_dust_info(manager)
+            break
+        except KeyboardInterrupt:
+            manager.program_kill("KeyboardInterrupt")
+        except Exception as e:
+            if i == API.retry_attempt:
+                for l in range(300, 0, -1):
+                    manager.text_page(["초기화 중... (4/6)", "미세먼지 정보 불러오는 중 ...", "정보를 불러오는 도중 에러가 발생했습니다.", "재시도에 실패했습니다.", f"자동 종료까지 .. ({l})"])
+                    time.sleep(1)
+                manager.program_kill("미세먼지 정보 로드 실패")
+                
+            else:
+                print("An unknown error occurred and we will retry. (%d/%d) : %s" % (API.retry_attempt - (i+1), API.retry_attempt, e))
+                manager.text_page(["초기화 중... (4/6)", "미세먼지 정보 불러오는 중 ...", "정보를 불러오는 도중 에러가 발생했습니다.", "재시도 중... (%d/%d)" % (API.retry_attempt - (i+1), API.retry_attempt)])
+                time.sleep(0.5)
+                continue
+    
+    # 버스정류소 정보 가져오기
+    for i in range(0, API.retry_attempt+1):
+        try:
+            manager.text_page(["초기화 중... (5/6)", "버스정류소 정보 불러오는 중 ..."])
             bus_station_list = update_bus_station_list()
             manager.bus_station_list = bus_station_list
             break
@@ -423,93 +555,36 @@ if __name__ == '__main__':
         except:
             if i == API.retry_attempt:
                 for l in range(300, 0, -1):
-                    manager.text_page(["초기화 중... (3/5)", "버스정류소 정보 불러오는 중 ...", "정보를 불러오는 도중 에러가 발생했습니다.", "재시도에 실패했습니다.", f"자동 종료까지 .. ({l})"])
+                    manager.text_page(["초기화 중... (5/6)", "버스정류소 정보 불러오는 중 ...", "정보를 불러오는 도중 에러가 발생했습니다.", "재시도에 실패했습니다.", f"자동 종료까지 .. ({l})"])
                     time.sleep(1)
-                manager.program_kill()
+                manager.program_kill("버스정류소 정보 로드 실패")
                 
             else:
                 print("An unknown error occurred and we will retry. (%d/%d)" % (API.retry_attempt - (i+1), API.retry_attempt))
-                manager.text_page(["초기화 중... (3/5)", "버스정류소 정보 불러오는 중 ...", "정보를 불러오는 도중 에러가 발생했습니다.", "재시도 중... (%d/%d)" % (API.retry_attempt - (i+1), API.retry_attempt)])
+                manager.text_page(["초기화 중... (5/6)", "버스정류소 정보 불러오는 중 ...", "정보를 불러오는 도중 에러가 발생했습니다.", "재시도 중... (%d/%d)" % (API.retry_attempt - (i+1), API.retry_attempt)])
                 time.sleep(0.5)
                 continue
     
+    # 곧 도착 버스 정보 가져오기
     for i in range(0, API.retry_attempt+1):
         try:
-            manager.text_page(["초기화 중... (3/5)", "버스정류소 정보 불러오는 중 ..."])
-            bus_station_list = update_bus_station_list()
-            manager.bus_station_list = bus_station_list
-            break
-        except KeyboardInterrupt:
-            manager.program_kill("KeyboardInterrupt")
-        except:
-            if i == API.retry_attempt:
-                for l in range(300, 0, -1):
-                    manager.text_page(["초기화 중... (3/5)", "버스정류소 정보 불러오는 중 ...", "정보를 불러오는 도중 에러가 발생했습니다.", "재시도에 실패했습니다.", f"자동 종료까지 .. ({l})"])
-                    time.sleep(1)
-                manager.program_kill()
-                
-            else:
-                print("An unknown error occurred and we will retry. (%d/%d)" % (API.retry_attempt - (i+1), API.retry_attempt))
-                manager.text_page(["초기화 중... (3/5)", "버스정류소 정보 불러오는 중 ...", "정보를 불러오는 도중 에러가 발생했습니다.", "재시도 중... (%d/%d)" % (API.retry_attempt - (i+1), API.retry_attempt)])
-                time.sleep(0.5)
-                continue
-    
-    # for i in range(0, API.retry_attempt+1):
-    #     try:
-    #         manager.text_page(["초기화 중... (4/5)", "버스정류소 날씨 정보 불러오는 중 ..."])
-    #         today_date = datetime.today().strftime("%Y%m%d")
-    #         update_bus_station_weather_info(manager, today_date)
-    #         break
-    #     except KeyboardInterrupt:
-    #         manager.program_kill("KeyboardInterrupt")
-    #     except Exception as e:
-    #         if i == API.retry_attempt:
-    #             for l in range(300, 0, -1):
-    #                 manager.text_page(["초기화 중... (4/5)", "버스정류소 날씨 정보 불러오는 중 ...", "정보를 불러오는 도중 에러가 발생했습니다.", "재시도에 실패했습니다.", f"자동 종료까지 .. ({l})"])
-    #                 time.sleep(1)
-    #             manager.program_kill(e)
-                
-    #         else:
-    #             print("An unknown error occurred and we will retry. (%d/%d)" % (API.retry_attempt - (i+1), API.retry_attempt))
-    #             manager.text_page(["초기화 중... (4/5)", "버스정류소 날씨 정보 불러오는 중 ...", "정보를 불러오는 도중 에러가 발생했습니다.", "재시도 중... (%d/%d)" % (API.retry_attempt - (i+1), API.retry_attempt)])
-    #             time.sleep(0.5)
-    #             continue
-    
-    for i in range(0, API.retry_attempt+1):
-        try:
-            manager.text_page(["초기화 중... (4/5)", "버스정류소 정보 불러오는 중 ..."])
-            bus_station_list = update_bus_station_list()
-            manager.bus_station_list = bus_station_list
-            break
-        except KeyboardInterrupt:
-            manager.program_kill("KeyboardInterrupt")
-        except:
-            if i == API.retry_attempt:
-                for l in range(300, 0, -1):
-                    manager.text_page(["초기화 중... (4/5)", "버스정류소 정보 불러오는 중 ...", "정보를 불러오는 도중 에러가 발생했습니다.", "재시도에 실패했습니다.", f"자동 종료까지 .. ({l})"])
-                    time.sleep(1)
-                manager.program_kill()
-                
-            else:
-                print("An unknown error occurred and we will retry. (%d/%d)" % (API.retry_attempt - (i+1), API.retry_attempt))
-                manager.text_page(["초기화 중... (4/5)", "버스정류소 정보 불러오는 중 ...", "정보를 불러오는 도중 에러가 발생했습니다.", "재시도 중... (%d/%d)" % (API.retry_attempt - (i+1), API.retry_attempt)])
-                time.sleep(0.5)
-                continue
-    
-    
-    
-    for i in range(0, API.retry_attempt+1):
-        try:
-            manager.text_page(["초기화 중... (5/5)", "곧 도착 버스 정보 불러오는 중 ..."])
+            manager.text_page(["초기화 중... (6/6)", "곧 도착 버스 정보 불러오는 중 ..."])
             update_station_arvl_bus_list(manager)
             break
         except KeyboardInterrupt:
             manager.program_kill("KeyboardInterrupt")
         except:
-            print("An unknown error occurred and we will retry. (%d/%d)" % (API.retry_attempt - (i+1), API.retry_attempt))
-            manager.text_page(["초기화 중... (5/5)", "곧 도착 버스 정보 불러오는 중 ...", "정보를 불러오는 도중 에러가 발생했습니다.", "재시도 중... (%d/%d)" % (API.retry_attempt - (i+1), API.retry_attempt)])
-            time.sleep(0.5)
-            continue
+            if i == API.retry_attempt:
+                for l in range(300, 0, -1):
+                    manager.text_page(["초기화 중... (6/6)", "곧 도착 버스 정보 불러오는 중 ...", "정보를 불러오는 도중 에러가 발생했습니다.", "재시도에 실패했습니다.", f"자동 종료까지 .. ({l})"])
+                    time.sleep(1)
+                manager.program_kill("곧 도착 버스 정보 로드 실패")
+                
+            else:
+                print("An unknown error occurred and we will retry. (%d/%d)" % (API.retry_attempt - (i+1), API.retry_attempt))
+                manager.text_page(["초기화 중... (6/6)", "곧 도착 버스 정보 불러오는 중 ...", "정보를 불러오는 도중 에러가 발생했습니다.", "재시도 중... (%d/%d)" % (API.retry_attempt - (i+1), API.retry_attempt)])
+                time.sleep(0.5)
+                continue
     
     print("-------------------------------")
     
@@ -538,7 +613,7 @@ if __name__ == '__main__':
         for bus_station in manager.bus_station_list:
             while True:
                 try:
-                    for i in range(0, 3+1):
+                    for i in range(1, 3+1):
                         manager.bus_arvl_page(bus_station)
                 except KeyboardInterrupt:
                     manager.program_kill("KeyboardInterrupt")
