@@ -45,7 +45,8 @@ class matrixManager:
         options.rows = 32
         options.cols = 64
         options.chain_length = 7
-        options.pixel_mapper_config = "V-mapper;Rotate:270"
+        #https://github.com/hzeller/rpi-rgb-led-matrix/tree/master/examples-api-use#remapping-coordinates
+        options.pixel_mapper_config = "V-mapper:Z;Rotate:270"
         options.pwm_lsb_nanoseconds = 50
         options.gpio_slowdown = 4
         options.pwm_bits = 5
@@ -72,6 +73,10 @@ class matrixManager:
         
         self.pm10Value = None # 미세먼지
         self.pm25Value = None # 초미세먼지
+        
+        # 마지막 곧 도착 버스 정보 새로고침 시간
+        self.last_refresh_arvl_bus_time = None
+        self.refresh_time_is_old = False
     
     def system_test(self):
         print(f"----- System Testing -----")
@@ -409,7 +414,7 @@ def update_station_arvl_bus_list(manager:matrixManager):
         
         print(API.get_log_datef(), f"Got arvl bus list .       ({i+1}/{len(manager.bus_station_list)}) : {bus_station.stationNm}({bus_station.mobileNo})")
         i+=1
-        
+    manager.last_refresh_arvl_bus_time = datetime.now()
     print(f"-------------------------------------")
     
 def update_weather_info(manager:matrixManager):
@@ -461,6 +466,22 @@ def thread_update_arvl_bus_list(manager):
             print(API.get_log_datef(), f"!! Error: {e}")
             print(API.get_log_datef(), f"!! Restart thread_update_arvl_bus_list .")
 
+def thread_refresh_arvl_bus_time(manager):
+    while 1:
+        time.sleep(10)
+        now_time = datetime.now()
+        time_difference = now_time - manager.last_refresh_arvl_bus_time
+        time_difference_in_minutes = time_difference.total_seconds() / 60
+        
+        if time_difference_in_minutes >= 3:
+            manager.refresh_time_is_old = True
+            print("Arvl bus data is too old! (Time elapsed since last refresh: {time_difference}s)")
+        else:
+            manager.refresh_time_is_old = False
+            print(f"Arvl bus data refreshed within 3 minutes . (Time elapsed since last refresh: {time_difference}s)")
+            
+    
+    
 first_execution = True
 def scheduled_task(scheduled_hour:int=20):
     global first_execution
@@ -485,8 +506,12 @@ if __name__ == '__main__':
     thread_update_bus_arvl_info = threading.Thread(target=thread_update_arvl_bus_list, args=(manager,))
     thread_update_bus_arvl_info.daemon = True
     
+    thread_refresh_arvl_bus_get_time = threading.Thread(target=thread_refresh_arvl_bus_time, args=(manager,))
+    thread_refresh_arvl_bus_get_time.daemon = True
+    
     scheduled_task_thread = threading.Thread(target=scheduled_task)
     scheduled_task_thread.daemon = True
+    
     
     
     threads.append(thread_update_bus_arvl_info)
@@ -588,8 +613,9 @@ if __name__ == '__main__':
                 continue
     
     # 쓰레드 생성
-    manager.text_page(["초기화 중... (6/6)", "scheduled task 생성 중 ..."])
+    manager.text_page(["초기화 중... (6/6)", "쓰레드 생성 중 ..."])
     scheduled_task_thread.start()
+    thread_refresh_arvl_bus_get_time.start()
     print("-------------------------------")
     
     if manager.bus_station_list == []:
@@ -619,6 +645,11 @@ if __name__ == '__main__':
                 try:
                     for i in range(1, 3+1):
                         manager.bus_arvl_page(bus_station)
+                        
+                        if manager.refresh_time_is_old:
+                            manager.text_page(["마지막 데이터 갱신이 2분을 지났습니다.", "프로그램을 확인해주세요.", "", "!! 핸드폰으로 버스 정보를 확인하세요.", "Err 03"])
+                            time.sleep(3)
+                    
                 except KeyboardInterrupt:
                     manager.program_kill("KeyboardInterrupt")
                 except Exception as e:
@@ -632,6 +663,7 @@ if __name__ == '__main__':
                 while True:
                     try:
                         manager.etc_page(bus_station)
+                    
                     except KeyboardInterrupt:
                         manager.program_kill("KeyboardInterrupt")
                     except Exception as e:
