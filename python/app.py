@@ -65,6 +65,9 @@ class matrixManager:
         self.x_loca_bus_now_sta = [132, 132, 132, 39]
         self.bus_now_sta_text_delay = [30, 30, 30, 30]
         
+        # 현재 표시 중인 역
+        self.now_display_station = None
+        
         # 날씨 정보 관련
         self.tmrw_TMN = None # 내일 최저기온
         self.tmrw_TMX = None # 내일 최고기온
@@ -77,6 +80,9 @@ class matrixManager:
         # 마지막 곧 도착 버스 정보 새로고침 시간
         self.last_refresh_arvl_bus_time = None
         self.refresh_time_is_old = False
+        
+        # 인터넷 연결 여부
+        self.network_connected = False
     
     def system_test(self):
         print(f"----- System Testing -----")
@@ -381,7 +387,7 @@ class matrixManager:
         
         print(API.get_log_datef()+" Program Ended")
         self.text_page()
-        exit(0)
+        os._exit(0)
         
 
 def update_bus_station_list():
@@ -456,8 +462,17 @@ def thread_update_arvl_bus_list(manager):
     while True:
         try:
             while True:
-                for i in tqdm.trange(30, desc="Refresh arvl bus list ..."):
-                    time.sleep(1)
+                print(API.get_log_datef(), "[thread_update_arvl_bus_list] Refresh after 30 seconds : arvl bus list")
+                time.sleep(30)
+                
+                while True:
+                    if manager.network_connected == False:
+                        print(API.get_log_datef(), "[thread_update_arvl_bus_list] get arvl bus list fail : Network connection failed.")
+                        print(API.get_log_datef(), "[thread_update_arvl_bus_list] Refresh after 10 seconds : arvl bus list")
+                        time.sleep(10)
+                        continue
+                    break
+                    
                 update_station_arvl_bus_list(manager)
         except KeyboardInterrupt:
             print("Thread Killed: KeyboardInterrupt")
@@ -473,17 +488,27 @@ def thread_refresh_arvl_bus_time(manager):
         time_difference = now_time - manager.last_refresh_arvl_bus_time
         time_difference_in_minutes = time_difference.total_seconds() / 60
         
-        if time_difference_in_minutes >= 3:
+        if time_difference_in_minutes >= 2:
             manager.refresh_time_is_old = True
-            print("Arvl bus data is too old! (Time elapsed since last refresh: {time_difference}s)")
+            print(API.get_log_datef(), f"[thread_refresh_arvl_bus_time] Arvl bus data is too old! (Time elapsed since last refresh: {time_difference}s)")
         else:
             manager.refresh_time_is_old = False
-            print(f"Arvl bus data refreshed within 3 minutes . (Time elapsed since last refresh: {time_difference}s)")
+            print(API.get_log_datef(), f"[thread_refresh_arvl_bus_time] Arvl bus data refreshed within 2 minutes . (Time elapsed since last refresh: {time_difference}s)")
+            
+def thread_refresh_network_connected(manager):
+    while 1:
+        time.sleep(10)
+        if API.check_internet_connection():
+            manager.network_connected = True
+            print(API.get_log_datef(), "[check_internet_connection] Network connected")
+        else:
+            manager.network_connected = False
+            print(API.get_log_datef(), "[check_internet_connection] Network unconnected")
             
     
     
 first_execution = True
-def scheduled_task(scheduled_hour:int=20):
+def thread_scheduled_task(scheduled_hour:int=20):
     global first_execution
     
     current_hour = time.localtime().tm_hour
@@ -496,34 +521,101 @@ def scheduled_task(scheduled_hour:int=20):
     first_execution = False
     print("작업이 잘 실행되었습니다.")
     
-    threading.Timer(24 * 60 * 60, scheduled_task, args=[scheduled_hour]).start()
+    threading.Timer(24 * 60 * 60, thread_scheduled_task, args=[scheduled_hour]).start()
 
+def thread_station_announcement(manager):
+    previous_station_id = None
+    while True:
+        time.sleep(1)
+        announcement_text = ""
+        now_display_station = manager.now_display_station
+        
+        # 현재 역 정보가 있는지 확인
+        if now_display_station == None:
+            continue
+        
+        # arvl bus 존재 확인
+        found_arvl = False
+        for arvl_bus in now_display_station.arvl_bus_list:
+            if arvl_bus.is_arvl:
+                found_arvl = True
+                break
+        if not found_arvl:
+            continue
+        
+        # 역의 정보가 바뀌었는지 확인
+        if previous_station_id == now_display_station.stationId:
+            continue
+        previous_station_id = now_display_station.stationId
+        
+        # tts 텍스트 생성
+        for arvl_bus in now_display_station.arvl_bus_list:
+            if arvl_bus.is_arvl == True:
+                announcement_text += arvl_bus.routeNm + "번, "
+        announcement_text += "버스가 잠시 후 도착할 예정입니다."
+        
+        print(API.get_log_datef, "[thread_station_announcement]", announcement_text)
 
-if __name__ == '__main__':
+def main():
     manager = matrixManager()
     threads = []
     
-    thread_update_bus_arvl_info = threading.Thread(target=thread_update_arvl_bus_list, args=(manager,))
-    thread_update_bus_arvl_info.daemon = True
+    threading_update_arvl_bus_list = threading.Thread(target=thread_update_arvl_bus_list, args=(manager,))
+    threading_update_arvl_bus_list.daemon = True
     
-    thread_refresh_arvl_bus_get_time = threading.Thread(target=thread_refresh_arvl_bus_time, args=(manager,))
-    thread_refresh_arvl_bus_get_time.daemon = True
+    threading_refresh_arvl_bus_time = threading.Thread(target=thread_refresh_arvl_bus_time, args=(manager,))
+    threading_refresh_arvl_bus_time.daemon = True
     
-    scheduled_task_thread = threading.Thread(target=scheduled_task)
-    scheduled_task_thread.daemon = True
+    threading_scheduled_task = threading.Thread(target=thread_scheduled_task)
+    threading_scheduled_task.daemon = True
     
+    threading_refresh_network_connected = threading.Thread(target=thread_refresh_network_connected, args=(manager,))
+    threading_refresh_network_connected.daemon = True
     
-    
-    threads.append(thread_update_bus_arvl_info)
+    threading_station_announcement = threading.Thread(target=thread_station_announcement, args=(manager, ))
+    threading_station_announcement.daemon = True
+        
+    threads.append(threading_update_arvl_bus_list)
+    threads.append(threading_refresh_arvl_bus_time)
+    threads.append(threading_scheduled_task)
+    threads.append(threading_refresh_network_connected)
+    threads.append(threading_station_announcement)
     
     print(end="\n\n")
     
+    # System Test
     manager.system_test()
     
     print("---------Program Start---------")
     
     # 하드웨어 시간 갱신
-    manager.text_page(["초기화 중... (1/6)", "하드웨어 시간 갱신 중 ..."])
+    for i in range(0, API.retry_attempt):
+        manager.text_page(["초기화 중... (1/6)", "인터넷 연결 확인 중 ..."])
+        if API.check_internet_connection():
+            print("--- Network connected ---\n%s Network connected\n-------------------------" % (API.get_log_datef()))
+            manager.network_connected = True
+            break
+        else:
+            print("--- Network connected ---\n%s Network unconnected\n-------------------------" % (API.get_log_datef()))
+            manager.network_connected = False
+            manager.text_page(["초기화 중... (1/6)", "인터넷 연결 확인 중 ...", "인터넷 연결에 실패했습니다.", "재시도 중... (%d/%d)" % (API.retry_attempt - (i+1), API.retry_attempt)])
+            time.sleep(1)
+            continue
+    
+    if manager.network_connected == False:
+        messages = ["인터넷 연결에 실패했습니다.", "인터넷 연결상태를 확인해주세요."]
+        for i in range(300, 0, -6):
+            for l in range(0, 3, 1):
+                manager.text_page([messages[0], f"자동 종료까지 ... ({i-l})"])
+                time.sleep(1)
+            for l in range(3, 5+1, 1):
+                manager.text_page([messages[1], f"자동 종료까지 ... ({i-l})"])
+                time.sleep(1)
+        
+        manager.program_kill("초기 인터넷 연결에 실패했습니다.")
+
+        
+    threading_refresh_network_connected.start()
     os.system("sudo hwclock -w")
     
     # 버스정류소 정보 가져오기
@@ -532,6 +624,18 @@ if __name__ == '__main__':
             manager.text_page(["초기화 중... (2/6)", "버스정류소 정보 불러오는 중 ..."])
             bus_station_list = update_bus_station_list()
             manager.bus_station_list = bus_station_list
+            
+            if manager.bus_station_list == []:
+                messages = ["불러와진 정류소가 없습니다.", "options.json 파일을 확인해주세요."]
+                for i in range(300, 0, -6):
+                    for l in range(0, 3, 1):
+                        manager.text_page([messages[0], f"자동 종료까지 ... ({i-l})"])
+                        time.sleep(1)
+                    for l in range(3, 5+1, 1):
+                        manager.text_page([messages[1], f"자동 종료까지 ... ({i-l})"])
+                        time.sleep(1)
+                
+                manager.program_kill("불러와진 정류소가 없습니다.")
             break
         except KeyboardInterrupt:
             manager.program_kill("KeyboardInterrupt")
@@ -614,40 +718,26 @@ if __name__ == '__main__':
     
     # 쓰레드 생성
     manager.text_page(["초기화 중... (6/6)", "쓰레드 생성 중 ..."])
-    scheduled_task_thread.start()
-    thread_refresh_arvl_bus_get_time.start()
+    # scheduled_task_thread.start()
+    threading_update_arvl_bus_list.start()
+    threading_refresh_arvl_bus_time.start()
+    threading_station_announcement.start()
     print("-------------------------------")
-    
-    if manager.bus_station_list == []:
-        try:
-            for i in range(300, 0, -6):
-                manager.text_page(["불러와진 정류소가 없습니다.", f"자동 종료까지 ... ({i})"])
-                time.sleep(1)
-                manager.text_page(["불러와진 정류소가 없습니다.", f"자동 종료까지 ... ({i-1})"])
-                time.sleep(1)
-                manager.text_page(["불러와진 정류소가 없습니다.", f"자동 종료까지 ... ({i-2})"])
-                time.sleep(1)
-                manager.text_page(["options.json 파일을 확인해주세요.", f"자동 종료까지 ... ({i-3})"])
-                time.sleep(1)
-                manager.text_page(["options.json 파일을 확인해주세요.", f"자동 종료까지 ... ({i-4})"])
-                time.sleep(1)
-                manager.text_page(["options.json 파일을 확인해주세요.", f"자동 종료까지 ... ({i-5})"])
-                time.sleep(1)
-            manager.program_kill("불러와진 정류소가 없습니다.")
-        except KeyboardInterrupt:
-            manager.program_kill("KeyboardInterrupt")
-    
-    thread_update_bus_arvl_info.start()
     
     while 1:
         for bus_station in manager.bus_station_list:
             while True:
                 try:
+                    manager.now_display_station = bus_station
                     for i in range(1, 3+1):
                         manager.bus_arvl_page(bus_station)
                         
-                        if manager.refresh_time_is_old:
+                        if manager.refresh_time_is_old == True:
                             manager.text_page(["마지막 데이터 갱신이 2분을 지났습니다.", "프로그램을 확인해주세요.", "", "!! 핸드폰으로 버스 정보를 확인하세요.", "Err 03"])
+                            time.sleep(3)
+                        
+                        if manager.network_connected == False:
+                            manager.text_page(["인터넷에 연결되어있지 않습니다.", "인터넷 연결을 확인해주세요.", "", "!! 핸드폰으로 버스 정보를 확인하세요.", "Err 01"])
                             time.sleep(3)
                     
                 except KeyboardInterrupt:
@@ -673,5 +763,7 @@ if __name__ == '__main__':
                         continue
                     break
                 time.sleep(0.1)
+    manager.program_kill("Program Ended")
     
-    manager.program_kill()
+if __name__ == '__main__':
+    main()
