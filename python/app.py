@@ -763,6 +763,7 @@ def main():
                         continue
                     break
                 time.sleep(0.1)
+    
     manager.program_kill("Program Ended")
     
 if __name__ == '__main__':
