@@ -29,10 +29,11 @@ except Exception as e:
     sys.exit('API module is not installed.\n')
 
 
-font_path5             = '/home/suzukaotto/BITP/fonts/SCDream3.otf'
+font_path8             = '/home/suzukaotto/BITP/fonts/SCDream4.otf'
 font_path12            = '/home/suzukaotto/BITP/fonts/SCDream5.otf'
 font_path14            = '/home/suzukaotto/BITP/fonts/SCDream5.otf'
 font_path16            = '/home/suzukaotto/BITP/fonts/SCDream5.otf'
+no_wifi_icon_path      = "python/icon/NO_WiFi.png"
 bus_icon_path          = "python/icon/BUS.png"
 bus_lowPlate_icon_path = "python/icon/BUS_lowPlate.png"
 
@@ -46,7 +47,7 @@ class matrixManager:
         options.cols = 64
         options.chain_length = 7
         #https://github.com/hzeller/rpi-rgb-led-matrix/tree/master/examples-api-use#remapping-coordinates
-        options.pixel_mapper_config = "V-mapper:Z;Rotate:270"
+        options.pixel_mapper_config = "V-mapper;Rotate:270"
         options.pwm_lsb_nanoseconds = 50
         options.gpio_slowdown = 4
         options.pwm_bits = 5
@@ -56,7 +57,7 @@ class matrixManager:
         
         self.size = (self.matrix.width, self.matrix.height)
         
-        self.font5  = ImageFont.truetype(font_path5,   5)
+        self.font8  = ImageFont.truetype(font_path8, 8)
         self.font12 = ImageFont.truetype(font_path12, 12)
         self.font14 = ImageFont.truetype(font_path14, 14)
         self.font16 = ImageFont.truetype(font_path16, 16)
@@ -374,8 +375,18 @@ class matrixManager:
         
         self.refresh(canvas)    
     
-    def refresh(self, image: Image.Image):
-        self.matrix.SetImage(image.convert('RGB'))
+    def refresh(self, canvas: Image.Image):
+        
+        # no_wifi_icon = Image.open(no_wifi_icon_path)
+        # draw = ImageDraw.Draw(canvas)
+        # draw.fontmode="1"
+        
+        # draw.rectangle([(10, 10), (50, 34)], outline="white", fill="black")
+        # draw.bitmap((11, 11),  no_wifi_icon, "red");
+        # draw.text((36, 12), "인터넷 연결을", "white", self.font12)
+        # draw.text((36, 22), "확인해주세요.", "white", self.font12)
+        
+        self.matrix.SetImage(canvas.convert('RGB'))
     
     def program_kill(self, reason:str=""):
         try:
@@ -390,8 +401,13 @@ class matrixManager:
         os._exit(0)
         
 
-def update_bus_station_list():
+def update_bus_station_list(manager):
     print(f"----- Getting bus station list -----")
+    
+    if manager.network_connected == False:
+        print(API.get_log_datef(), "[update_bus_station_list]", "No internet connection")
+        print(f"----------------------------------")
+        return 1
     
     print(API.get_log_datef(), "Bus station list API Request sent")
     bus_station_list = API.get_bus_station_list()
@@ -406,10 +422,12 @@ def update_station_arvl_bus_list(manager:matrixManager):
     print(f"----- Getting arvl bus list -----")
     i = 0
     for bus_station in manager.bus_station_list:
+        if manager.network_connected == False:
+            print(API.get_log_datef(), "[update_station_arvl_bus_list]", "No internet connection")
+            print(f"----------------------------------")
+            return 1
+        
         print(API.get_log_datef(), f"Getting arvl bus list ... [{bus_station.stationNm}({bus_station.mobileNo})]({i+1}/{len(manager.bus_station_list)})")
-        ## 인터넷 연결 확인
-        if not API.check_internet_connection():
-            continue
         
         arvl_bus_list_data = API.get_arvl_bus_list(manager.bus_station_list[i])
         if arvl_bus_list_data == 4:
@@ -425,6 +443,11 @@ def update_station_arvl_bus_list(manager:matrixManager):
     
 def update_weather_info(manager:matrixManager):
     print(f"----- Getting weather info -----")
+    
+    if manager.network_connected == False:
+        print(API.get_log_datef(), "[update_weather_info]", "No internet connection")
+        print(f"----------------------------------")
+        return 1    
     
     print(API.get_log_datef(), f"weather info API Request sent ...")
     tomorrow_TMN, tomorrow_TMX, tomorrow_SKY, tomorrow_PTY = API.get_weather_info()
@@ -444,6 +467,11 @@ def update_weather_info(manager:matrixManager):
 
 def update_f_dust_info(manager:matrixManager):
     print(f"----- Getting fine dust info -----")
+    
+    if manager.network_connected == False:
+        print(API.get_log_datef(), "[update_f_dust_info]", "No internet connection")
+        print(f"----------------------------------")
+        return 1    
     
     print(API.get_log_datef(), f"fine dust info API Request sent ...")
     pm10Value, pm25Value = API.get_f_dust_info()
@@ -622,7 +650,7 @@ def main():
     for i in range(0, API.retry_attempt+1):
         try:
             manager.text_page(["초기화 중... (2/6)", "버스정류소 정보 불러오는 중 ..."])
-            bus_station_list = update_bus_station_list()
+            bus_station_list = update_bus_station_list(manager)
             manager.bus_station_list = bus_station_list
             
             if manager.bus_station_list == []:
