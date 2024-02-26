@@ -48,7 +48,7 @@ class matrixManager:
         options.chain_length = 7
         #https://github.com/hzeller/rpi-rgb-led-matrix/tree/master/examples-api-use#remapping-coordinates
         options.pixel_mapper_config = "V-mapper;Rotate:270"
-        options.pwm_lsb_nanoseconds = 50
+        options.pwm_lsb_nanoseconds = 100
         options.gpio_slowdown = 4
         options.pwm_bits = 5
         options.pwm_dither_bits = 0
